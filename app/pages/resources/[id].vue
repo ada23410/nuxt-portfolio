@@ -7,32 +7,39 @@
             </div>
         </div>
         <div class="article-body">
-        <div v-if="post.cover" class="img" :style="{ backgroundImage: `url(${post.cover})` }" />
+        <div class="img" :style="{ backgroundImage: `url(${post.cover})` }" />
         <div class="content">
             <div class="author">
-            <div class="name">
-                <span>&ensp;Author / </span>
-                <span>{{ post.author || 'Aida Wu' }}</span>
-            </div>
-            <div class="tag" v-if="post.tags?.length">
-                <span v-for="t in post.tags" :key="t">{{ t }}</span>
-            </div>
+                <div class="name">
+                    <span>&ensp;Author / </span>
+                    <span>{{ post.author || 'Aida Wu' }}</span>
+                </div>
+                <div class="tag" v-if="post.tags?.length">
+                    <span v-for="t in post.tags" :key="t">{{ t }}</span>
+                </div>
             </div>
 
             <div class="contents">
-            <!-- 簡述（如果有） -->
-            <p v-if="post.excerpt" class="paragraph">{{ post.excerpt }}</p>
+            <!-- 有 blocks 就渲染 blocks -->
+                <div v-if="blocks.length">
+                    <p v-for="(b, i) in blocks" :key="b.id ?? i" class="paragraph">
+                        {{ b.text }}
+                    </p>
+                </div>
 
-            <!-- 內容區（若你之後接 Notion blocks，可以在這裡 render） -->
-            <div v-if="blocks?.length">
-                <p v-for="b in blocks" :key="b.id" class="paragraph">
-                {{ b.text }}
-                </p>
-            </div>
+                <!-- 沒 blocks 時用描述當段落 -->
+                <div v-else-if="paragraphs.length">
+                    <p v-for="(p, i) in paragraphs" :key="i" class="paragraph">
+                        {{ p }}
+                    </p>
+                </div>
 
-            <!-- 目前先放一張示意圖 -->
-            <div class="img" v-else />
-            </div>
+                <!-- 以上都沒有就給個占位 -->
+                <div v-else>
+                    <p class="paragraph">（內容準備中）</p>
+                </div>
+
+                <div class="img" /></div>
         </div>
         </div>
     </div>
@@ -98,28 +105,66 @@ if (!post.value) {
 
     .article-body {
         .img {
-        margin: 5rem 0; width: 100%; max-height: 540px; aspect-ratio: 1 / 1;
-        border-radius: 60px; background-color: $color-text-light; background-size: cover; background-position: center;
+            margin: 5rem 0; 
+            width: 100%; 
+            max-height: 540px; 
+            aspect-ratio: 1 / 1;
+            border-radius: 60px; 
+            background-color: $color-text-light; 
+            background-size: cover; 
+            background-position: center;
         }
-
         .content {
-        display: flex; justify-content: space-between; align-items: flex-start; gap: 5rem;
-
+            display: flex; 
+            justify-content: space-between; 
+            align-items: flex-start; 
+            gap: 5rem;
         .author {
             flex: 1;
-            .name { font-size: $font-size-lg; font-weight: 500; }
+            .name { 
+                font-size: $font-size-lg; 
+                font-weight: 500; 
+            }
             .tag {
-            margin-top: 2rem; font-size: $font-size-sm; color: $color-text-light;
-            span { padding: .5rem 1rem; border: .5px solid $color-border; border-radius: 50px; margin-right: .5rem; }
+                margin-top: 2rem; 
+                font-size: $font-size-sm; 
+                color: $color-text-light;
+                span { 
+                    padding: .5rem 1rem; 
+                    border: .5px solid $color-border; 
+                    border-radius: 50px; 
+                    margin-right: .5rem; 
+                }
             }
         }
 
-        .contents {
-            flex: 4;
-            .subtitle { font-size: $font-size-xxl; font-weight: 500; margin-bottom: 1rem; }
-            .paragraph { font-size: $font-size-base; font-weight: 300; color: $color-text-light; text-align: justify; line-height: 1.5rem; margin-bottom: 2rem; }
-            .img { margin: 5rem 0; width: 100%; max-height: 540px; aspect-ratio: 1 / 1; border-radius: 60px; background-color: $color-text-light; }
-        }
+            .contents {
+                flex: 4;
+
+                .subtitle {
+                    font-size: $font-size-xxl;
+                    font-weight: 500;
+                    margin-bottom: 1rem;
+                }
+
+                .paragraph {
+                    font-size: $font-size-base;
+                    font-weight: 300;
+                    color: $color-text-light;
+                    text-align: justify;
+                    line-height: 1.5rem;
+                    margin-bottom: 2rem;
+                }
+
+                .img {
+                    margin: 5rem 0;
+                    width: 100%;
+                    max-height: 540px;
+                    aspect-ratio: 1 / 1;
+                    border-radius: 60px;
+                    background-color: $color-text-light;
+                }
+            }
         }
     }
 }
