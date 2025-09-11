@@ -1,0 +1,51 @@
+// 顏色系統
+$color-primary: #42b883;   // 主色 (Vue 綠 / 強調用)
+$color-secondary: #35495e; // 輔色 (深藍灰 / 導覽或背景)
+$color-accent: #FE7743;    // 強調色 (按鈕 hover, highlight)
+
+$color-bg: #F3F2EC;        // 頁面背景
+$color-bg-dark: #252525;    
+$color-bg-alt: #eceadf;    // 次背景 (區塊分隔)
+
+$color-text: #333333;      // 主要文字
+$color-text-light: #666666; // 次要文字
+$color-text-white: #f6f6f6;
+$color-border: #D9D9D9;    // 邊框
+
+// 字體
+$font-family-base: 'Inter', 'Noto Sans TC', sans-serif;
+$font-family-heading: 'Poppins', 'Noto Sans TC', sans-serif;
+
+// 字級 (以 16px 為基準)
+$font-size-xs: 0.75rem;   // 12px
+$font-size-sm: 0.875rem;  // 14px
+$font-size-base: 1rem;    // 16px
+$font-size-lg: 1.25rem;   // 20px
+$font-size-xl: 1.5rem;    // 24px
+$font-size-xxl: 2rem;     // 32px
+$font-size-xxxl: 2.5rem;  // 40px
+$font-size-display: 3rem; // 48px
+$font-size-giant: 4rem;   // 64px
+
+// 間距 (Spacing)
+$spacing-xs: 0.5rem;  // 8px
+$spacing-sm: 0.75rem; // 12px
+$spacing-md: 1rem;    // 16px
+$spacing-lg: 1.5rem;  // 24px
+$spacing-xl: 2rem;    // 32px
+
+// 邊框與圓角
+$border-radius-sm: 4px;
+$border-radius-md: 8px;
+$border-radius-lg: 16px;
+
+// 陰影
+$shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+$shadow-md: 0 4px 6px rgba(0, 0, 0, 0.15);
+$shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.2);
+
+// RWD 斷點
+$breakpoint-sm: 576px;  // 手機
+$breakpoint-md: 768px;  // 平板
+$breakpoint-lg: 992px;  // 筆電
+$breakpoint-xl: 1440px; // 桌機大螢幕
