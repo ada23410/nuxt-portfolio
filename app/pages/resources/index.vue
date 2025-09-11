@@ -1,0 +1,97 @@
+<template>
+    <div class="container">
+        <div class="resources-head">
+        <div class="title">
+            <h1>Recent Resources</h1>
+            <div class="category">
+            <span>All</span>
+            <span>Vue.js</span>
+            <span>Nuxt.js</span>
+            <span>P5.js</span>
+            <span>JavaScript</span>
+            <span>Generative AI</span>
+            <span>UI / UX</span>
+            </div>
+        </div>
+        <div>
+            <p>
+            專注於體驗細節與效能品質，將設計與開發融入可靠的數位服務，
+            讓每一次互動都兼具人性的溫度與科技的精準。
+            </p>
+        </div>
+        </div>
+
+        <div class="resources-body">
+            <Card :items="resources" />
+        </div>
+    </div>
+</template>
+
+<script setup lang="ts">
+import Card from '@/components/Card.vue'
+
+const resources = useState('resources', () => ([
+  {
+    id: 1,
+    title: 'Designing with Empathy',
+    published_at: '2025.06.01_______',
+    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin eu sapien vestibulum, laoreet orci eu, semper magna. Donec sit amet metus suscipit, vulputate orci ut, lobortis est. Duis ut pulvinar mi. Morbi eu diam eget nisi scelerisque consequat.…',
+    image_url: '',
+    tags: ['Design','Frontend']
+  },
+  {
+    id: 2,
+    title: 'Nuxt 3 Data Fetching',
+    published_at: '2025.06.01_______',
+    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin eu sapien vestibulum, laoreet orci eu, semper magna. Donec sit amet metus suscipit, vulputate orci ut, lobortis est. Duis ut pulvinar mi. Morbi eu diam eget nisi scelerisque consequat.…',
+    image_url: '',
+    tags: ['Nuxt.js']
+  }
+]))
+
+// --- 要接後端 API（/api/resources）時，改用這段 ---
+// const { data: resources } = await useFetch('/api/resources', {
+//   query: { limit: 6 },
+//   default: () => []
+// })
+</script>
+
+<style lang="scss" scoped>
+.container {
+    padding: 10rem 14rem;
+    background-color: $color-bg;
+
+    .resources-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+
+        .title {
+        h1 {
+            font-size: $font-size-giant;
+            font-weight: 600;
+        }
+        .category {
+            margin-top: 2.5rem;
+            font-size: $font-size-base;
+            font-weight: 400;
+            color: $color-text-light;
+
+            span {
+            padding: .5rem 1rem;
+            border: .5px solid $color-border;
+            border-radius: 50px;
+            margin-right: .5rem;
+            }
+        }
+        }
+        p {
+        max-width: 26rem;
+        font-size: $font-size-base;
+        line-height: 2rem;
+        font-weight: 400;
+        color: $color-text;
+        }
+    }
+}
+</style>
