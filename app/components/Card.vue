@@ -78,17 +78,15 @@ const itemTo = (it) => `${props.basePath}/${encodeURIComponent(String(it.id))}`
     .card-body { 
         margin-top: 1.5rem; }
     .title { 
-        display: flex; 
-        justify-content: space-between;
-        align-items: baseline; 
-    }
-    .text { 
-        font-size: $font-size-xxl; 
-        font-weight: 500; 
-    }
-    .time { 
-        font-size: $font-size-lg;
-        color: $color-text-light; 
+        .text { 
+            font-size: $font-size-xxl; 
+            font-weight: 500; 
+            margin-bottom: 1rem;
+        }
+        .time { 
+            font-size: $font-size-lg;
+            color: $color-text-light; 
+        }
     }
     .description p {  
         margin-top: 1rem; 

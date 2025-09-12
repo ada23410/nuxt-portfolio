@@ -100,20 +100,26 @@
     </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 
 /** 啟用某個區塊內的視差 */
-function useParallaxSection(sectionEl: HTMLElement, selector: string, strength = 220) {
-    if (!sectionEl) return () => {}
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    const els = Array.from(sectionEl.querySelectorAll<HTMLElement>(selector))
-    const layers = els.map(el => ({ el, speed: Number(el.dataset.speed || 0.2), y: 0, target: 0 }))
+function useParallaxSection(sectionEl, selector, strength = 220) {
+    if (!sectionEl || typeof window === 'undefined') return () => {}
+
+    const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches
+    const els = Array.from(sectionEl.querySelectorAll(selector))
+    const layers = els.map(el => ({
+        el,
+        speed: Number(el.dataset.speed || 0.2),
+        y: 0,
+        target: 0
+    }))
     let ticking = false
 
     const getProgress = () => {
         const r = sectionEl.getBoundingClientRect()
-        const vh = window.innerHeight
+        const vh = window.innerHeight || document.documentElement.clientHeight
         const sectionCenter = r.top + r.height / 2
         const viewportCenter = vh / 2
         const dist = sectionCenter - viewportCenter
@@ -150,24 +156,28 @@ function useParallaxSection(sectionEl: HTMLElement, selector: string, strength =
 }
 
 /* refs */
-const projectSection = ref<HTMLElement | null>(null)
-const resourcesRef   = ref<HTMLElement | null>(null)
-const aboutRef       = ref<HTMLElement | null>(null)
-const cleanups: Array<() => void> = []
+const projectSection = ref(null)
+const resourcesRef   = ref(null)
+const aboutRef       = ref(null)
+const cleanups = []
 
 onMounted(() => {
-    if (projectSection.value) {
-        cleanups.push(useParallaxSection(projectSection.value, '.square, .circle, .triangle-svg', 220))
-    }
-    if (resourcesRef.value) {
-        cleanups.push(useParallaxSection(resourcesRef.value, '.resource-card', 220))
-    }
-    if (aboutRef.value) {
-        cleanups.push(useParallaxSection(aboutRef.value, '.inorganic', 220))
-    }
+  if (projectSection.value) {
+    cleanups.push(
+      useParallaxSection(projectSection.value, '.square, .circle, .triangle-svg', 220)
+    )
+  }
+  if (resourcesRef.value) {
+    cleanups.push(useParallaxSection(resourcesRef.value, '.resource-card', 220))
+  }
+  if (aboutRef.value) {
+    cleanups.push(useParallaxSection(aboutRef.value, '.inorganic', 220))
+  }
 })
 
-onBeforeUnmount(() => { cleanups.forEach(fn => fn()) })
+onBeforeUnmount(() => {
+  cleanups.forEach(fn => fn())
+})
 </script>
 
 <style lang="scss" scoped>
