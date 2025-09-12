@@ -2,11 +2,10 @@
 import { Client } from '@notionhq/client'
 import { defineEventHandler, createError } from 'h3'
 
+// 驗證uuid
 const isUUID = (s: string) =>
-    /^[0-9a-fA-F]{32}$/.test(s.replace(/-/g, '')) || // 32 hex（允許你傳不帶 -）
+    /^[0-9a-fA-F]{32}$/.test(s.replace(/-/g, '')) || 
     /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(s)
-
-const toPlain = (rt?: any[]) => (rt ?? []).map(t => t.plain_text).join('')
 
 function heroUrl(page: any, props: any) {
     const files = props['Hero Image']?.files ?? []
@@ -20,9 +19,9 @@ async function fetchAllBlocks(notion: Client, pageId: string) {
     const out: any[] = []
     do {
         const r = await notion.blocks.children.list({
-        block_id: pageId,
-        page_size: 100,
-        start_cursor: cursor
+            block_id: pageId,
+            page_size: 100,
+            start_cursor: cursor
         })
         out.push(...r.results)
         cursor = r.has_more ? r.next_cursor ?? undefined : undefined
@@ -49,11 +48,16 @@ export default defineEventHandler(async (event) => {
         page_size: 1,
         filter: {
             property: 'Slug',
-            rich_text: { equals: idOrSlug } // ← 不轉小寫了
+            rich_text: { 
+                equals: slug
+            }
         }
         })
         if (!q.results.length) {
-            throw createError({ statusCode: 404, statusMessage: `Post not found for slug: ${slug}` })
+            throw createError({ 
+                statusCode: 404, 
+                statusMessage: `Post not found for slug: ${slug}`
+            })
         }
         pageId = q.results[0].id
     }
@@ -66,29 +70,29 @@ export default defineEventHandler(async (event) => {
     const blocks = rawBlocks.map((b: any) => {
         const pl = (x?: any[]) => (x ?? []).map((t: any) => t.plain_text).join('')
         switch (b.type) {
-        case 'paragraph':
-            return { id: b.id, type: 'p', text: pl(b.paragraph.rich_text) }
-        case 'heading_1':
-            return { id: b.id, type: 'h1', text: pl(b.heading_1.rich_text) }
-        case 'heading_2':
-            return { id: b.id, type: 'h2', text: pl(b.heading_2.rich_text) }
-        case 'heading_3':
-            return { id: b.id, type: 'h3', text: pl(b.heading_3.rich_text) }
-        case 'quote':
-            return { id: b.id, type: 'quote', text: pl(b.quote.rich_text) }
-        case 'divider':
-            return { id: b.id, type: 'divider' }
-        case 'image': {
-            const src = b.image.type === 'file' ? b.image.file.url : b.image.external.url
-            const caption = pl(b.image.caption)
-            return { id: b.id, type: 'img', src, caption }
-        }
-        case 'bulleted_list_item':
-            return { id: b.id, type: 'li', variant: 'bullet', text: pl(b.bulleted_list_item.rich_text) }
-        case 'numbered_list_item':
-            return { id: b.id, type: 'li', variant: 'number', text: pl(b.numbered_list_item.rich_text) }
-        default:
-            return { id: b.id, type: b.type }
+            case 'paragraph':
+                return { id: b.id, type: 'p', text: pl(b.paragraph.rich_text) }
+            case 'heading_1':
+                return { id: b.id, type: 'h1', text: pl(b.heading_1.rich_text) }
+            case 'heading_2':
+                return { id: b.id, type: 'h2', text: pl(b.heading_2.rich_text) }
+            case 'heading_3':
+                return { id: b.id, type: 'h3', text: pl(b.heading_3.rich_text) }
+            case 'quote':
+                return { id: b.id, type: 'quote', text: pl(b.quote.rich_text) }
+            case 'divider':
+                return { id: b.id, type: 'divider' }
+            case 'image': {
+                const src = b.image.type === 'file' ? b.image.file.url : b.image.external.url
+                const caption = pl(b.image.caption)
+                return { id: b.id, type: 'img', src, caption }
+            }
+            case 'bulleted_list_item':
+                return { id: b.id, type: 'li', variant: 'bullet', text: pl(b.bulleted_list_item.rich_text) }
+            case 'numbered_list_item':
+                return { id: b.id, type: 'li', variant: 'number', text: pl(b.numbered_list_item.rich_text) }
+            default:
+                return { id: b.id, type: b.type }
         }
     })
 

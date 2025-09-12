@@ -1,14 +1,17 @@
 import { Client } from '@notionhq/client'
 import { defineEventHandler, getQuery, createError } from 'h3'
 
-/** 依你的欄位：優先用 Hero Image，其次用封面 */
-function heroUrl(page: any, p: any) {
-    const f = p['Hero Image']?.files?.[0]
-    return f?.file?.url
-        ?? f?.external?.url
-        ?? page.cover?.file?.url
-        ?? page.cover?.external?.url
-        ?? null
+/** 優先用 Hero Image，其次用封面 */
+function heroUrl(page: any, props: any) {
+    const hero = props?.['Hero Image']?.files?.[0];   // 只取第一張
+    if (hero?.file?.url)     return hero.file.url;
+    if (hero?.external?.url) return hero.external.url;
+
+    const cover = page?.cover;
+    if (cover?.file?.url)     return cover.file.url;
+    if (cover?.external?.url) return cover.external.url;
+
+    return null;
 }
 
 export default defineEventHandler(async (event) => {
@@ -17,7 +20,10 @@ export default defineEventHandler(async (event) => {
         throw createError({ statusCode: 500, statusMessage: 'Missing NOTION envs' })
     }
 
-    const notion = new Client({ auth: notionToken, notionVersion: '2025-09-03' })
+    const notion = new Client({ 
+        auth: notionToken, 
+        notionVersion: '2025-09-03' 
+    })
 
     const q = getQuery(event)
     const limit = Math.min(Number(q.limit ?? 8), 50)
@@ -25,9 +31,19 @@ export default defineEventHandler(async (event) => {
     const tag = typeof q.tag === 'string' ? q.tag : undefined
 
     // 你的 Status 是「select」型別
-    const and: any[] = [{ property: 'Status', select: { equals: 'Published' } }]
+    const and: any[] = [{ 
+        property: 'Status', 
+        select: { 
+            equals: 'Published' 
+        } 
+    }]
     if (tag) {
-        and.push({ property: 'Category', multi_select: { contains: tag } })
+        and.push({ 
+            property: 'Category', 
+            multi_select: { 
+                contains: tag 
+            }
+        })
     }
 
     const res = await notion.dataSources.query({
@@ -35,7 +51,10 @@ export default defineEventHandler(async (event) => {
         page_size: limit,
         start_cursor,
         filter: { and },
-        sorts: [{ property: 'Date', direction: 'descending' }]
+        sorts: [{ 
+            property: 'Date', 
+            direction: 'descending'
+        }]
     })
 
     const items = res.results.map((page: any) => {

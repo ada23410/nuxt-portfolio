@@ -29,15 +29,19 @@
     </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
+import { computed } from 'vue'
 import Card from '@/components/Card.vue'
 
-const { data, pending, error } = await useFetch('/api/resources', { 
+const { data, pending, error } = await useFetch('/api/resources', {
+    key: 'resources:list',
     default: () => ({ 
         items: [] 
-    }) 
+    })
 })
 
+// 方便在 template 綁定
+const items = computed(() => data.value?.items ?? [])
 </script>
 
 <style lang="scss" scoped>

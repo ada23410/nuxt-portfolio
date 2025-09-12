@@ -1,67 +1,55 @@
 <template>
-  <div class="wrap-box">
+<div class="wrap-box">
     <NuxtLink
-      v-for="item in items"
-      :key="item.id"
-      class="card-link"
-      :to="itemTo(item)"
-      :aria-label="`Open resource ${item.title}`"
-    >
-      <article class="card">
-        <div class="card-head">
-          <!-- 有圖用 <img>，提升 LCP/SEO；沒圖給純背景色 -->
-          <img
-            v-if="item.image_url"
-            :src="item.image_url"
-            :alt="item.title"
-            loading="lazy"
-            class="img"
-          />
-          <div v-else class="img img--placeholder" />
-        </div>
-
-        <div class="card-body">
-          <div class="title">
-            <div class="text">{{ item.title }}</div>
-            <div class="time">{{ item.published_at }}</div>
-          </div>
-          <div class="description">
-            <p>{{ item.description }}</p>
-            <div class="tag">
-              <span v-for="(t, i) in item.tags" :key="i">{{ t }}</span>
+        v-for="item in items"
+        :key="item.id"
+        class="card-link"
+        :to="itemTo(item)"
+        :aria-label="`Open resource ${item.title}`"
+        >
+        <article class="card">
+            <div class="card-head">
+            <!-- 有圖用 <img>，提升 LCP/SEO；沒圖給純背景色 -->
+            <img
+                v-if="item.image_url"
+                :src="item.image_url"
+                :alt="item.title"
+                loading="lazy"
+                class="img"
+            />
+            <div v-else class="img img--placeholder" />
             </div>
-          </div>
-        </div>
-      </article>
-    </NuxtLink>
-  </div>
+
+            <div class="card-body">
+            <div class="title">
+                <div class="text">{{ item.title }}</div>
+                <div class="time">{{ item.published_at }}</div>
+            </div>
+            <div class="description">
+                <p>{{ item.description }}</p>
+                <div class="tag">
+                <span v-for="(t, i) in item.tags" :key="i">{{ t }}</span>
+                </div>
+            </div>
+            </div>
+        </article>
+        </NuxtLink>
+    </div>
 </template>
 
-<script setup lang="ts">
-type Item = {
-  id: string | number
-  slug?: string
-  title: string
-  published_at?: string
-  description?: string
-  image_url?: string
-  tags?: string[]
-}
-
-const props = withDefaults(defineProps<{
-  items: Item[]
-  basePath?: string
-}>(), {
-  basePath: '/resources'
+<script setup>
+const props = defineProps({
+    items: { 
+        type: Array, 
+        default: () => [] 
+    },
+    basePath: { 
+        type: String, 
+        default: '/resources' 
+    }
 })
 
-const { items, basePath } = toRefs(props)
-
-const itemTo = (it: Item) => {
-  const key = (it.slug ?? String(it.id))
-  // 物件語法讓 router 代處理編碼與拼接
-  return { path: `${basePath.value}/${encodeURIComponent(key)}` }
-}
+const itemTo = (it) => `${props.basePath}/${encodeURIComponent(String(it.id))}`
 </script>
 
 <style scoped lang="scss">

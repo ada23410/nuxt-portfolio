@@ -62,55 +62,79 @@
     <div v-else class="container"><p>Loading…</p></div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { computed } from 'vue'
 
-type Node =
-    | { type: 'p';  text: string }
-    | { type: 'h1'|'h2'|'h3'; text: string }
-    | { type: 'quote'; text: string }
-    | { type: 'divider' }
-    | { type: 'img'; src: string; caption?: string }
-    | { type: 'ul'; children: { type: 'li'; text: string }[] }
-
+/* 讀動態參數 :id */
 const route = useRoute()
-const id = computed(() => route.params.id as string)
+const id = computed(() => route.params.id)
 
+/* 打後端單篇 API：/api/resources/:id */
 const { data, pending, error } = await useFetch(
     () => `/api/resources/${id.value}`,
-    { key: () => `resource:${id.value}`, default: () => ({ post: null, blocks: [], nodes: [] }) }
+    {
+        key: () => `resource:${id.value}`,
+        default: () => ({ 
+            post: null, 
+            blocks: [], 
+            nodes: [] 
+        })
+    }
 )
 
-/** rich_text[] -> 純文字 */
-const rtText = (rt?: any[]) => (rt ?? []).map(t => t.plain_text ?? '').join('')
+/* rich_text[] -> 純文字 */
+const rtText = (rt) => (rt ?? []).map(t => t?.plain_text ?? '').join('')
 
-/** 將 raw/simplified blocks 轉成前端 nodes */
-function toNodes(input: any[]): Node[] {
-    const out: Node[] = []
-    let ulBuf: { type: 'li'; text: string }[] | null = null
+/* 把 raw / 簡化 blocks 轉成前端可渲染的 nodes */
+function toNodes(input) {
+    const out = []
+    let ulBuf = null
     const flushUl = () => { if (ulBuf?.length) out.push({ type: 'ul', children: ulBuf }); ulBuf = null }
 
-    for (const b of input ?? []) {
+    for (const b of (input ?? [])) {
         // 你的簡化格式 { id, type, text }
         if (b && typeof b === 'object' && 'type' in b && 'text' in b && !('paragraph' in b)) {
         if (b.type === 'p') out.push({ type: 'p', text: b.text })
         continue
         }
 
+        // Notion raw block
         const t = b?.type
         switch (t) {
-        case 'paragraph': { flushUl(); const text = rtText(b.paragraph?.rich_text); if (text) out.push({ type: 'p', text }); break }
+        case 'paragraph': {
+            flushUl()
+            const text = rtText(b.paragraph?.rich_text)
+            if (text) out.push({ type: 'p', text })
+            break
+        }
         case 'heading_1':
         case 'heading_2':
         case 'heading_3': {
             flushUl()
             const text = rtText(b[t]?.rich_text)
-            if (text) out.push({ type: ({ heading_1: 'h1', heading_2: 'h2', heading_3: 'h3' } as any)[t], text })
+            if (!text) break
+            const map = { heading_1: 'h1', heading_2: 'h2', heading_3: 'h3' }
+            out.push({ type: map[t], text })
             break
         }
-        case 'quote': { flushUl(); const text = rtText(b.quote?.rich_text); if (text) out.push({ type: 'quote', text }); break }
-        case 'bulleted_list_item': { const text = rtText(b.bulleted_list_item?.rich_text); if (!text) break; if (!ulBuf) ulBuf = []; ulBuf.push({ type: 'li', text }); break }
-        case 'divider': { flushUl(); out.push({ type: 'divider' }); break }
+        case 'quote': {
+            flushUl()
+            const text = rtText(b.quote?.rich_text)
+            if (text) out.push({ type: 'quote', text })
+            break
+        }
+        case 'bulleted_list_item': {
+            const text = rtText(b.bulleted_list_item?.rich_text)
+            if (!text) break
+            if (!ulBuf) ulBuf = []
+            ulBuf.push({ type: 'li', text })
+            break
+        }
+        case 'divider': {
+            flushUl()
+            out.push({ type: 'divider' })
+            break
+        }
         case 'image': {
             flushUl()
             const src = b.image?.file?.url || b.image?.external?.url
@@ -118,25 +142,28 @@ function toNodes(input: any[]): Node[] {
             if (src) out.push({ type: 'img', src, caption })
             break
         }
-        default: { flushUl(); break }
+        default: {
+            flushUl()
+            break
+        }
         }
     }
     flushUl()
     return out
 }
 
-/** 直接使用 API 回傳的 post（不要再從 page 轉一次） */
-const post = computed(() => (data.value as any)?.post ?? null)
+/* 直接用 API 回傳的 post（避免前端再轉） */
+const post = computed(() => data.value?.post ?? null)
 
-/** nodes：若 API 已給 nodes 就用；否則從 blocks 轉 */
-const nodes = computed<Node[]>(() => {
-    const given = (data.value as any)?.nodes
-    if (given?.length) return given as Node[]
-    const blocks = (data.value as any)?.blocks ?? []
+/* nodes：若後端已給 nodes 就用；否則由 blocks 轉 */
+const nodes = computed(() => {
+    const given = data.value?.nodes
+    if (Array.isArray(given) && given.length) return given
+    const blocks = data.value?.blocks ?? []
     return toNodes(blocks)
 })
 
-/** 沒有 nodes 時，用 post.description 切段當後備內容 */
+/* 沒 nodes 時，用 post.description 切段備援 */
 const paragraphs = computed(() => {
     if (nodes.value.length) return []
     const desc = post.value?.description ?? ''
