@@ -1,87 +1,147 @@
 <template>
-    <div class="container" v-if="post">
+    <div v-if="pending" class="container"><p>Loading…</p></div>
+    <div v-else-if="error" class="container"><p>Failed: {{ error.message }}</p></div>
+
+    <div class="container" v-else-if="post">
         <div class="article-head">
-            <div class="title">
-                <h1>{{ post.title }}</h1>
-                <h2>{{ post.published_at }}</h2>
-            </div>
+        <div class="title">
+            <h1>{{ post.title }}</h1>
+            <h2>{{ post.published_at }}</h2>
         </div>
+        </div>
+
         <div class="article-body">
-        <div class="img" :style="{ backgroundImage: `url(${post.cover})` }" />
+        <!-- 建議不用自閉合，寫成成對標籤更直觀 -->
+        <div class="img" :style="post.cover ? { backgroundImage: `url(${post.cover})` } : {}"></div>
+
         <div class="content">
             <div class="author">
-                <div class="name">
-                    <span>&ensp;Author / </span>
-                    <span>{{ post.author || 'Aida Wu' }}</span>
-                </div>
-                <div class="tag" v-if="post.tags?.length">
-                    <span v-for="t in post.tags" :key="t">{{ t }}</span>
-                </div>
+            <div class="name">
+                <span>&ensp;Author / </span>
+                <span>{{ post.author || 'Aida Wu' }}</span>
+            </div>
+            <div class="tag" v-if="post.tags?.length">
+                <span v-for="t in post.tags" :key="t">{{ t }}</span>
+            </div>
             </div>
 
             <div class="contents">
-            <!-- 有 blocks 就渲染 blocks -->
-                <div v-if="blocks.length">
-                    <p v-for="(b, i) in blocks" :key="b.id ?? i" class="paragraph">
-                        {{ b.text }}
-                    </p>
-                </div>
+            <!-- blocks -> nodes 渲染 -->
+            <template v-if="nodes.length">
+                <template v-for="(n, i) in nodes" :key="i">
+                    <p v-if="n.type === 'p'">{{ n.text }}</p>
 
-                <!-- 沒 blocks 時用描述當段落 -->
-                <div v-else-if="paragraphs.length">
-                    <p v-for="(p, i) in paragraphs" :key="i" class="paragraph">
-                        {{ p }}
-                    </p>
-                </div>
+                    <h1 v-else-if="n.type === 'h1'">{{ n.text }}</h1>
+                    <h2 v-else-if="n.type === 'h2'">{{ n.text }}</h2>
+                    <h3 v-else-if="n.type === 'h3'">{{ n.text }}</h3>
 
-                <!-- 以上都沒有就給個占位 -->
-                <div v-else>
-                    <p class="paragraph">（內容準備中）</p>
-                </div>
+                    <blockquote v-else-if="n.type === 'quote'">{{ n.text }}</blockquote>
 
-                <div class="img" /></div>
+                    <ul v-else-if="n.type === 'ul'">
+                        <li v-for="(li, j) in n.children" :key="j">{{ li.text }}</li>
+                    </ul>
+
+                    <hr v-else-if="n.type === 'divider'" />
+
+                    <figure v-else-if="n.type === 'img'" class="img-wrap">
+                        <img :src="n.src" :alt="n.caption || ''" />
+                        <figcaption v-if="n.caption">{{ n.caption }}</figcaption>
+                    </figure>
+                </template>
+            </template>
+
+            <!-- 沒 nodes：用描述切段 -->
+            <div v-else>
+                <p v-for="(p, i) in paragraphs" :key="i" class="paragraph">{{ p }}</p>
+            </div>
+            </div>
         </div>
         </div>
     </div>
 
-    <div v-else class="container">
-        <p>Loading…</p>
-    </div>
+    <div v-else class="container"><p>Loading…</p></div>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+
+type Node =
+    | { type: 'p';  text: string }
+    | { type: 'h1'|'h2'|'h3'; text: string }
+    | { type: 'quote'; text: string }
+    | { type: 'divider' }
+    | { type: 'img'; src: string; caption?: string }
+    | { type: 'ul'; children: { type: 'li'; text: string }[] }
+
 const route = useRoute()
-const id = computed(() => 
-    String(route.params.id || ''
-    ))
+const id = computed(() => route.params.id as string)
 
-// 跟列表頁用同一個 key 拿到假資料
-const resources = useState<any[]>('resources', () => [])
+const { data, pending, error } = await useFetch(
+    () => `/api/resources/${id.value}`,
+    { key: () => `resource:${id.value}`, default: () => ({ post: null, blocks: [], nodes: [] }) }
+)
 
-// 依 id 找出該篇
-const post = computed(() => resources.value.find(r => String(r.id) === id.value) || null)
+/** rich_text[] -> 純文字 */
+const rtText = (rt?: any[]) => (rt ?? []).map(t => t.plain_text ?? '').join('')
 
-// blocks：之後接 API 再真的回傳陣列，現在先保底為 []
-const blocks = computed(() => {
-    const raw = (post.value as any)?.blocks
-    return Array.isArray(raw) ? raw : []
-})
+/** 將 raw/simplified blocks 轉成前端 nodes */
+function toNodes(input: any[]): Node[] {
+    const out: Node[] = []
+    let ulBuf: { type: 'li'; text: string }[] | null = null
+    const flushUl = () => { if (ulBuf?.length) out.push({ type: 'ul', children: ulBuf }); ulBuf = null }
 
-// 若沒有 blocks，就把描述字串切成段落
-const paragraphs = computed(() => {
-    const d = post.value?.description?.trim() ?? ''
-    return d ? d.split(/\n{2,}/) : []
-})
+    for (const b of input ?? []) {
+        // 你的簡化格式 { id, type, text }
+        if (b && typeof b === 'object' && 'type' in b && 'text' in b && !('paragraph' in b)) {
+        if (b.type === 'p') out.push({ type: 'p', text: b.text })
+        continue
+        }
 
-useSeoMeta({
-    title: () => (post.value ? `${post.value.title} | Resources` : 'Resources'),
-    description: () => post.value?.description || 'Resource detail'
-})
-
-// 找不到就 404（直接顯示 Nuxt 的 404 畫面）
-if (!post.value) {
-    throw createError({ statusCode: 404, statusMessage: 'Resource not found' })
+        const t = b?.type
+        switch (t) {
+        case 'paragraph': { flushUl(); const text = rtText(b.paragraph?.rich_text); if (text) out.push({ type: 'p', text }); break }
+        case 'heading_1':
+        case 'heading_2':
+        case 'heading_3': {
+            flushUl()
+            const text = rtText(b[t]?.rich_text)
+            if (text) out.push({ type: ({ heading_1: 'h1', heading_2: 'h2', heading_3: 'h3' } as any)[t], text })
+            break
+        }
+        case 'quote': { flushUl(); const text = rtText(b.quote?.rich_text); if (text) out.push({ type: 'quote', text }); break }
+        case 'bulleted_list_item': { const text = rtText(b.bulleted_list_item?.rich_text); if (!text) break; if (!ulBuf) ulBuf = []; ulBuf.push({ type: 'li', text }); break }
+        case 'divider': { flushUl(); out.push({ type: 'divider' }); break }
+        case 'image': {
+            flushUl()
+            const src = b.image?.file?.url || b.image?.external?.url
+            const caption = rtText(b.image?.caption)
+            if (src) out.push({ type: 'img', src, caption })
+            break
+        }
+        default: { flushUl(); break }
+        }
+    }
+    flushUl()
+    return out
 }
+
+/** 直接使用 API 回傳的 post（不要再從 page 轉一次） */
+const post = computed(() => (data.value as any)?.post ?? null)
+
+/** nodes：若 API 已給 nodes 就用；否則從 blocks 轉 */
+const nodes = computed<Node[]>(() => {
+    const given = (data.value as any)?.nodes
+    if (given?.length) return given as Node[]
+    const blocks = (data.value as any)?.blocks ?? []
+    return toNodes(blocks)
+})
+
+/** 沒有 nodes 時，用 post.description 切段當後備內容 */
+const paragraphs = computed(() => {
+    if (nodes.value.length) return []
+    const desc = post.value?.description ?? ''
+    return desc.split(/\n{2,}/).map(s => s.trim()).filter(Boolean)
+})
 </script>
 
 <style lang="scss" scoped>
