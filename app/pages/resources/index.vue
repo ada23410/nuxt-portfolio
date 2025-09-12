@@ -22,7 +22,9 @@
         </div>
 
         <div class="resources-body">
-            <Card :items="resources" />
+                <Card :items="data?.items ?? []" />
+                <div v-if="pending">Loading…</div>
+                <div v-if="error">Failed: {{ error.message }}</div>
         </div>
     </div>
 </template>
@@ -30,30 +32,31 @@
 <script setup lang="ts">
 import Card from '@/components/Card.vue'
 
-const resources = useState('resources', () => ([
-  {
-    id: 1,
-    title: 'Designing with Empathy',
-    published_at: '2025.06.01_______',
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin eu sapien vestibulum, laoreet orci eu, semper magna. Donec sit amet metus suscipit, vulputate orci ut, lobortis est. Duis ut pulvinar mi. Morbi eu diam eget nisi scelerisque consequat.…',
-    image_url: '',
-    tags: ['Design','Frontend']
-  },
-  {
-    id: 2,
-    title: 'Nuxt 3 Data Fetching',
-    published_at: '2025.06.01_______',
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin eu sapien vestibulum, laoreet orci eu, semper magna. Donec sit amet metus suscipit, vulputate orci ut, lobortis est. Duis ut pulvinar mi. Morbi eu diam eget nisi scelerisque consequat.…',
-    image_url: '',
-    tags: ['Nuxt.js']
-  }
-]))
+// const resources = useState('resources', () => ([
+//   {
+//     id: 1,
+//     title: 'Designing with Empathy',
+//     published_at: '2025.06.01_______',
+//     description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin eu sapien vestibulum, laoreet orci eu, semper magna. Donec sit amet metus suscipit, vulputate orci ut, lobortis est. Duis ut pulvinar mi. Morbi eu diam eget nisi scelerisque consequat.…',
+//     image_url: '',
+//     tags: ['Design','Frontend']
+//   },
+//   {
+//     id: 2,
+//     title: 'Nuxt 3 Data Fetching',
+//     published_at: '2025.06.01_______',
+//     description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin eu sapien vestibulum, laoreet orci eu, semper magna. Donec sit amet metus suscipit, vulputate orci ut, lobortis est. Duis ut pulvinar mi. Morbi eu diam eget nisi scelerisque consequat.…',
+//     image_url: '',
+//     tags: ['Nuxt.js']
+//   }
+// ]))
 
-// --- 要接後端 API（/api/resources）時，改用這段 ---
-// const { data: resources } = await useFetch('/api/resources', {
-//   query: { limit: 6 },
-//   default: () => []
-// })
+const { data, pending, error } = await useFetch('/api/resources', { 
+    default: () => ({ 
+        items: [] 
+    }) 
+})
+
 </script>
 
 <style lang="scss" scoped>

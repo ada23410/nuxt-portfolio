@@ -10,5 +10,10 @@ export default defineNuxtConfig({
           }
         }
       }
+    },
+    runtimeConfig: {
+      notionToken: process.env.NOTION_TOKEN,
+      notionDataSourceId: process.env.NOTION_DATASOURCE_ID,
+      public: {}
     }
 })

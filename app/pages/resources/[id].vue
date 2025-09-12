@@ -3,7 +3,7 @@
         <div class="article-head">
             <div class="title">
                 <h1>{{ post.title }}</h1>
-                <h2>{{ post.date }}</h2>
+                <h2>{{ post.published_at }}</h2>
             </div>
         </div>
         <div class="article-body">
