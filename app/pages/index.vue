@@ -45,32 +45,7 @@
         <div class="resources-title">Resources</div>
         <div class="resource-card" data-speed="0.22">
             <!-- 先保留靜態卡片；之後可換成 v-for 渲染 Notion posts -->
-            <div class="card">
-            <div class="card-head"><div class="img" /></div>
-            <div class="card-body">
-                <div class="title">
-                <div class="text">Title</div>
-                <div class="time">2025.06.01_______</div>
-                </div>
-                <div class="description">
-                <p>Lorem ipsum dolor sit amet…</p>
-                <div class="tag"><span>tag</span><span>tag</span></div>
-                </div>
-            </div>
-            </div>
-            <div class="card">
-            <div class="card-head"><div class="img" /></div>
-            <div class="card-body">
-                <div class="title">
-                <div class="text">Title</div>
-                <div class="time">2025.06.01_______</div>
-                </div>
-                <div class="description">
-                <p>Lorem ipsum dolor sit amet…</p>
-                <div class="tag"><span>tag</span><span>tag</span></div>
-                </div>
-            </div>
-            </div>
+            <Card :items="items" base-path="/resources"/>
         </div>
 
         <div class="look-more">
@@ -101,7 +76,19 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { computed, ref, onMounted, onBeforeUnmount } from 'vue'
+import Card from '@/components/Card.vue'
+
+const { data, pending, error } = await useFetch('/api/resources', {
+    query: { 
+        limit: 2 
+    },           // 也可以加 tag: 'Nuxt.js'
+    default: () => ({ 
+        items: [] 
+    })
+})
+
+const items = computed(() => data.value?.items ?? [])
 
 /** 啟用某個區塊內的視差 */
 function useParallaxSection(sectionEl, selector, strength = 220) {
@@ -162,21 +149,21 @@ const aboutRef       = ref(null)
 const cleanups = []
 
 onMounted(() => {
-  if (projectSection.value) {
-    cleanups.push(
-      useParallaxSection(projectSection.value, '.square, .circle, .triangle-svg', 220)
-    )
-  }
-  if (resourcesRef.value) {
-    cleanups.push(useParallaxSection(resourcesRef.value, '.resource-card', 220))
-  }
-  if (aboutRef.value) {
-    cleanups.push(useParallaxSection(aboutRef.value, '.inorganic', 220))
-  }
+    if (projectSection.value) {
+        cleanups.push(
+        useParallaxSection(projectSection.value, '.square, .circle, .triangle-svg', 220)
+        )
+    }
+    if (resourcesRef.value) {
+        cleanups.push(useParallaxSection(resourcesRef.value, '.resource-card', 220))
+    }
+    if (aboutRef.value) {
+        cleanups.push(useParallaxSection(aboutRef.value, '.inorganic', 220))
+    }
 })
 
 onBeforeUnmount(() => {
-  cleanups.forEach(fn => fn())
+    cleanups.forEach(fn => fn())
 })
 </script>
 
@@ -270,64 +257,6 @@ onBeforeUnmount(() => {
                     height: 100%; 
                 }
             }
-        }
-        .resource-card {
-            position: relative; 
-            z-index: 1; 
-            padding: 10rem 0;
-            display: grid; 
-            justify-items: center; 
-            align-items: center;
-            grid-template-columns: repeat(2, 1fr); gap: 5rem;
-        .card {
-            max-width: 540px; 
-            width: 100%;
-            .img { 
-                width: 100%; 
-                aspect-ratio: 1 / 1;
-                border-radius: 60px; 
-                background-color: $color-text-light; 
-            }
-            .card-body {
-                margin-top: 1.5rem; 
-            }
-            .title { 
-                display: flex; 
-                justify-content: space-between; 
-                align-items: baseline;
-                .text { 
-                    font-size: $font-size-xxl; 
-                    font-weight: 500; 
-                }
-                .time { 
-                    font-size: $font-size-lg; 
-                    font-weight: 400; 
-                    color: $color-text-light; 
-                }
-            }
-            .description { 
-                margin-top: 1rem;
-                p { 
-                    font-size: $font-size-base; 
-                    font-weight: 300; 
-                    color: $color-text-light; 
-                    text-align: justify; 
-                    line-height: 1.5rem; 
-                }
-            }
-            .tag { 
-                margin-top: 1.5rem; 
-                font-size: $font-size-base; 
-                font-weight: 400; 
-                color: $color-text-light;
-            span { 
-                padding: .5rem 1rem; 
-                border: .5px solid $color-border; 
-                border-radius: 50px; 
-                margin-right: .5rem; }
-
-            }
-        }
         }
 
         .inorganic {

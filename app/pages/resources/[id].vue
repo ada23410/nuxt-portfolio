@@ -63,111 +63,134 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, watchEffect } from 'vue'
 
-/* 讀動態參數 :id */
 const route = useRoute()
-const id = computed(() => route.params.id)
+const id = computed(() => String(route.params.id))
 
-/* 打後端單篇 API：/api/resources/:id */
 const { data, pending, error } = await useFetch(
-    () => `/api/resources/${id.value}`,
-    {
-        key: () => `resource:${id.value}`,
-        default: () => ({ 
-            post: null, 
-            blocks: [], 
-            nodes: [] 
-        })
-    }
+  () => `/api/resources/${id.value}`,
+  { key: () => `resource:${id.value}`, default: () => ({ post: null, blocks: [], nodes: [] }) }
 )
 
-/* rich_text[] -> 純文字 */
+/* Notion rich_text[] -> 文字 */
 const rtText = (rt) => (rt ?? []).map(t => t?.plain_text ?? '').join('')
 
-/* 把 raw / 簡化 blocks 轉成前端可渲染的 nodes */
+/* blocks -> nodes（同時支援你的「簡化格式」與原生 Notion block） */
 function toNodes(input) {
-    const out = []
-    let ulBuf = null
-    const flushUl = () => { if (ulBuf?.length) out.push({ type: 'ul', children: ulBuf }); ulBuf = null }
+  const out = []
+  let ulBuf = null
+  const flushUl = () => {
+    if (ulBuf && ulBuf.length) out.push({ type: 'ul', children: ulBuf })
+    ulBuf = null
+  }
 
-    for (const b of (input ?? [])) {
-        // 你的簡化格式 { id, type, text }
-        if (b && typeof b === 'object' && 'type' in b && 'text' in b && !('paragraph' in b)) {
-        if (b.type === 'p') out.push({ type: 'p', text: b.text })
-        continue
-        }
-
-        // Notion raw block
-        const t = b?.type
-        switch (t) {
-        case 'paragraph': {
-            flushUl()
-            const text = rtText(b.paragraph?.rich_text)
-            if (text) out.push({ type: 'p', text })
-            break
-        }
-        case 'heading_1':
-        case 'heading_2':
-        case 'heading_3': {
-            flushUl()
-            const text = rtText(b[t]?.rich_text)
-            if (!text) break
-            const map = { heading_1: 'h1', heading_2: 'h2', heading_3: 'h3' }
-            out.push({ type: map[t], text })
-            break
-        }
-        case 'quote': {
-            flushUl()
-            const text = rtText(b.quote?.rich_text)
-            if (text) out.push({ type: 'quote', text })
-            break
-        }
-        case 'bulleted_list_item': {
-            const text = rtText(b.bulleted_list_item?.rich_text)
-            if (!text) break
+  for (const b of (input ?? [])) {
+    // 先處理你後端回傳的「簡化格式」：{ id, type, ... }
+    if (b && typeof b === 'object' && 'type' in b && !('paragraph' in b)) {
+      switch (b.type) {
+        case 'p':
+          flushUl()
+          if (b.text) out.push({ type: 'p', text: b.text })
+          break
+        case 'quote':
+          flushUl()
+          if (b.text) out.push({ type: 'quote', text: b.text })
+          break
+        case 'divider':
+          flushUl()
+          out.push({ type: 'divider' })
+          break
+        case 'img':
+          flushUl()
+          if (b.src) out.push({ type: 'img', src: b.src, caption: b.caption })
+          break
+        case 'li':
+          if (b.text) {
             if (!ulBuf) ulBuf = []
-            ulBuf.push({ type: 'li', text })
-            break
-        }
-        case 'divider': {
-            flushUl()
-            out.push({ type: 'divider' })
-            break
-        }
-        case 'image': {
-            flushUl()
-            const src = b.image?.file?.url || b.image?.external?.url
-            const caption = rtText(b.image?.caption)
-            if (src) out.push({ type: 'img', src, caption })
-            break
-        }
-        default: {
-            flushUl()
-            break
-        }
-        }
+            ulBuf.push({ type: 'li', text: b.text })
+          }
+          break
+        default:
+          flushUl()
+      }
+      continue
     }
-    flushUl()
-    return out
+
+    // 原生 Notion block
+    const t = b?.type
+    switch (t) {
+      case 'paragraph': {
+        flushUl()
+        const text = rtText(b.paragraph?.rich_text)
+        if (text) out.push({ type: 'p', text })
+        break
+      }
+      case 'heading_1':
+      case 'heading_2':
+      case 'heading_3': {
+        flushUl()
+        const text = rtText(b[t]?.rich_text)
+        if (text) out.push({ type: t === 'heading_1' ? 'h1' : t === 'heading_2' ? 'h2' : 'h3', text })
+        break
+      }
+      case 'quote': {
+        flushUl()
+        const text = rtText(b.quote?.rich_text)
+        if (text) out.push({ type: 'quote', text })
+        break
+      }
+      case 'bulleted_list_item': {
+        const text = rtText(b.bulleted_list_item?.rich_text)
+        if (text) {
+          if (!ulBuf) ulBuf = []
+          ulBuf.push({ type: 'li', text })
+        }
+        break
+      }
+      case 'divider': {
+        flushUl()
+        out.push({ type: 'divider' })
+        break
+      }
+      case 'image': {
+        flushUl()
+        const src = b.image?.file?.url || b.image?.external?.url
+        const caption = rtText(b.image?.caption)
+        if (src) out.push({ type: 'img', src, caption })
+        break
+      }
+      default: {
+        flushUl()
+      }
+    }
+  }
+  flushUl()
+  return out
 }
 
-/* 直接用 API 回傳的 post（避免前端再轉） */
+/* 直接用 API 回傳的 post */
 const post = computed(() => data.value?.post ?? null)
 
-/* nodes：若後端已給 nodes 就用；否則由 blocks 轉 */
+/* 有 nodes 就用 nodes；否則把 blocks 轉成 nodes */
 const nodes = computed(() => {
-    const given = data.value?.nodes
-    if (Array.isArray(given) && given.length) return given
-    const blocks = data.value?.blocks ?? []
-    return toNodes(blocks)
+  const given = data.value?.nodes
+  if (given?.length) return given
+  const blocks = data.value?.blocks ?? []
+  return toNodes(blocks)
 })
 
-/* 沒 nodes 時，用 post.description 切段備援 */
+/* 沒有 nodes 時，用 description 當後備段落 */
 const paragraphs = computed(() => {
-    if (nodes.value.length) return []
-    const desc = post.value?.description ?? ''
-    return desc.split(/\n{2,}/).map(s => s.trim()).filter(Boolean)
+  if (nodes.value.length) return []
+  const desc = post.value?.description ?? ''
+  return desc.split(/\n{2,}/).map(s => s.trim()).filter(Boolean)
+})
+
+/* 可移除：除錯看看是否有資料 */
+watchEffect(() => {
+  console.log('API blocks →', data.value?.blocks)
+  console.log('nodes →', nodes.value)
 })
 </script>
 
