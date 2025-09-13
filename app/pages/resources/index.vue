@@ -4,13 +4,15 @@
         <div class="title">
             <h1>Recent Resources</h1>
             <div class="category">
-            <span>All</span>
-            <span>Vue.js</span>
-            <span>Nuxt.js</span>
-            <span>P5.js</span>
-            <span>JavaScript</span>
-            <span>Generative AI</span>
-            <span>UI / UX</span>
+                <button
+                    v-for="t in TAGS"
+                    :key="t.label"
+                    class="chip"
+                    :class="{ active: (tag || '') === t.value }"
+                    @click="tag = t.value"
+                >
+                    {{ t.label }}
+                </button>
             </div>
         </div>
         <div>
@@ -22,26 +24,48 @@
         </div>
 
         <div class="resources-body">
-            <Card :items="data?.items ?? []" />
             <div v-if="pending">Loading…</div>
-            <div v-if="error">Failed: {{ error.message }}</div>
+            <div v-else-if="error">Failed: {{ error.message }}</div>
+            <Card v-else :items="items" base-path="/resources" />
         </div>
     </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import Card from '@/components/Card.vue'
 
-const { data, pending, error } = await useFetch('/api/resources', {
-    key: 'resources:list',
+const route = useRoute()
+const router = useRouter()
+
+// 讀所有分類
+const { data: catRes } = await useFetch('/api/resources/categories', {
+    default: () => ({ 
+        categories: [] 
+    })
+})
+const categories = computed(() => 
+    catRes.value?.categories ?? []
+)
+
+// 目前選中的 tag（同步到網址 ?tag=）
+const tag = ref(String(route.query.tag || ''))
+watch(tag, v => router.replace({ query: { ...route.query, tag: v || undefined } }))
+
+// 依 tag 抓列表
+const query = computed(() => ({ limit: 6, ...(tag.value ? { tag: tag.value } : {}) }))
+const { data: listRes, pending, error } = await useFetch('/api/resources', {
+    query,
+    key: () => `resources:${tag.value || 'all'}`,
     default: () => ({ 
         items: [] 
     })
 })
+const items = computed(() => listRes.value?.items ?? [])
 
-// 方便在 template 綁定
-const items = computed(() => data.value?.items ?? [])
+// 組合 chips（All + 動態分類）
+const TAGS = computed(() => [{ label: 'All', value: '' }, ...categories.value.map(n => ({ label: n, value: n }))])
+
 </script>
 
 <style lang="scss" scoped>
@@ -53,25 +77,25 @@ const items = computed(() => data.value?.items ?? [])
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
-
         .title {
-        h1 {
-            font-size: $font-size-giant;
-            font-weight: 600;
-        }
-        .category {
-            margin-top: 2.5rem;
-            font-size: $font-size-base;
-            font-weight: 400;
-            color: $color-text-light;
-
-            span {
-            padding: .5rem 1rem;
-            border: .5px solid $color-border;
-            border-radius: 50px;
-            margin-right: .5rem;
+            h1 {
+                font-size: $font-size-giant;
+                font-weight: 600;
             }
-        }
+            .category {
+                margin-top: 2.5rem;
+                .chip {
+                    padding: .5rem 1rem;
+                    background-color: transparent;
+                    font-size: $font-size-base;
+                    font-weight: 400;
+                    color: $color-text-light;
+                    border: .5px solid $color-border;
+                    border-radius: 50px;
+                    margin-right: .5rem;
+                    cursor: pointer;
+                }
+            }
         }
         p {
         max-width: 26rem;
