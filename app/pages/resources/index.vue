@@ -32,39 +32,56 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { ref, computed, watch } from 'vue'
 import Card from '@/components/Card.vue'
 
 const route = useRoute()
 const router = useRouter()
 
-// 讀所有分類
+// --- 讀所有分類（去重）---
 const { data: catRes } = await useFetch('/api/resources/categories', {
-    default: () => ({ 
-        categories: [] 
-    })
+    default: () => ({ categories: [] })
 })
-const categories = computed(() => 
-    catRes.value?.categories ?? []
+const categories = computed(() => {
+    const arr = catRes.value?.categories ?? []
+    // 去重 + 排序（依需要）
+    return [...new Set(arr)].sort()
+})
+
+// --- 目前選中的 tag（與網址 ?tag= 同步）---
+const tag = ref(String(route.query.tag || ''))
+// 使用者點擊 chip
+const setTag = (v) => {
+    tag.value = v
+}
+// 當 tag 變動，更新網址（清空時移除參數）
+watch(tag, (v) => {
+    router.replace({ query: { ...route.query, tag: v || undefined } })
+    // 捲回頂端（可選）
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+})
+// 使用者用瀏覽器返回/前進時，同步 tag
+watch(
+    () => route.query.tag,
+    (q) => {
+        tag.value = String(q || '')
+    }
 )
 
-// 目前選中的 tag（同步到網址 ?tag=）
-const tag = ref(String(route.query.tag || ''))
-watch(tag, v => router.replace({ query: { ...route.query, tag: v || undefined } }))
-
-// 依 tag 抓列表
+// --- 依 tag 抓列表 ---
 const query = computed(() => ({ limit: 6, ...(tag.value ? { tag: tag.value } : {}) }))
 const { data: listRes, pending, error } = await useFetch('/api/resources', {
     query,
     key: () => `resources:${tag.value || 'all'}`,
-    default: () => ({ 
-        items: [] 
-    })
+    default: () => ({ items: [] })
 })
 const items = computed(() => listRes.value?.items ?? [])
 
-// 組合 chips（All + 動態分類）
-const TAGS = computed(() => [{ label: 'All', value: '' }, ...categories.value.map(n => ({ label: n, value: n }))])
+// --- 組合 chips（All + 動態分類）---
+const TAGS = computed(() => [
+    { label: 'All', value: '' },
+    ...categories.value.map((n) => ({ label: n, value: n }))
+])
 
 </script>
 

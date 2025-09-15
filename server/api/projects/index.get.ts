@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
 
     const and: any[] = [
         { property: 'Status', select: { equals: 'Published' } },
-        { property: 'Type',   select: { equals: 'Resource' } }
+        { property: 'Type',   select: { equals: 'Project' } }
     ]
     if (tag) and.push({ property: 'Category', multi_select: { contains: tag } })
 
@@ -20,10 +20,7 @@ export default defineEventHandler(async (event) => {
         data_source_id: notionDataSourceId,
         page_size: limit,
         filter: { and },
-        sorts: [{ 
-            property: 'Date', 
-            direction: 'descending' 
-        }]
+        sorts: [{ property: 'Date', direction: 'descending' }]
     })
 
     const items = res.results.map(mapPageToCard)

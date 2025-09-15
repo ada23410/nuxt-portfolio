@@ -187,10 +187,11 @@ const paragraphs = computed(() => {
   return desc.split(/\n{2,}/).map(s => s.trim()).filter(Boolean)
 })
 
-/* 可移除：除錯看看是否有資料 */
+/* 除錯觀察：瀏覽器 DevTools > Console（server 端 log 會在終端機） */
 watchEffect(() => {
-  console.log('API blocks →', data.value?.blocks)
-  console.log('nodes →', nodes.value)
+  console.log('[detail] API post →', data.value?.post)
+  console.log('[detail] API blocks →', data.value?.blocks)
+  console.log('[detail] nodes →', nodes.value)
 })
 </script>
 
