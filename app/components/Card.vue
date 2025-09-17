@@ -9,15 +9,15 @@
         >
         <article class="card">
             <div class="card-head">
-            <!-- 有圖用 <img>，提升 LCP/SEO；沒圖給純背景色 -->
-            <img
-                v-if="item.image_url"
-                :src="item.image_url"
-                :alt="item.title"
-                loading="lazy"
-                class="img"
-            />
-            <div v-else class="img img--placeholder" />
+                <!-- 有圖用 <img>，提升 LCP/SEO；沒圖給純背景色 -->
+                <img
+                    v-if="item.cover"
+                    :src="item.cover"
+                    :alt="item.title"
+                    loading="lazy"
+                    class="img"
+                />
+                <div v-else class="img img--placeholder" />
             </div>
 
             <div class="card-body">

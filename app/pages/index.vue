@@ -16,19 +16,8 @@
         <div class="project-card">
             <div class="square" data-speed="0.15"></div>
             <div class="circle" data-speed="0.25"></div>
-            <div class="triangle-svg" data-speed="0.35">
-                <svg viewBox="0 0 387 370">
-                    <path
-                    d="M 193.5 15
-                        Q 208.5 0, 223.5 15
-                        L 372 340
-                        Q 390 370, 323 390
-                        L 15 370
-                        Q 0 360, 15 335
-                        Z"
-                    fill="#666666"
-                    />
-                </svg>
+            <div class="triangle" data-speed="0.35">
+                <div class="img"></div>
             </div>
         </div>
         <div class="look-more">
@@ -247,40 +236,54 @@ onBeforeUnmount(() => {
             border-radius: 50%; 
             align-self: flex-end;
         }
-        .triangle-svg { 
-            width: 100%; 
-            max-width: 387px; 
-            aspect-ratio: 387 / 370; 
+        .triangle { 
+            width: 100%;
+            max-width: 387px;
+            aspect-ratio: 1/1;
             align-self: flex-start;
-                svg { 
-                    width: 100%; 
-                    height: 100%; 
+            overflow: hidden;
+                .img {
+                    width: 100%;
+                    height: 100%;
+                    background-size: cover;
+                    background-position: center;
+                    background-color: $color-text-light; 
+
+                    -webkit-mask-image: url('/rounded-triangle.svg');
+                    -webkit-mask-repeat: no-repeat;
+                    -webkit-mask-size: contain;
+                    -webkit-mask-position: center;
+
+                    mask-image: url('/rounded-triangle.svg');
+                    mask-repeat: no-repeat;
+                    mask-size: contain;
+                    mask-position: center;
                 }
             }
         }
 
         .inorganic {
-            --h: clamp(540px, 30vw, 630px);
-            --w: clamp(260px, 20vw, 260px);
-            --r: 90px;
-            --overlap: 10px;
+                --h: clamp(540px, 30vw, 630px);
+                --w: clamp(260px, 20vw, 260px);
+                --r: 90px;
+                --overlap: 10px;
 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 10rem 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 10rem 0;
 
-            .pill {
-                width: var(--w);
-                height: var(--h);
-                border-radius: calc(var(--r) * 1.5);
-                background: $color-text-light;
-                position: relative;
-            }
+                .pill {
+                    width: var(--w);
+                    height: var(--h);
+                    border-radius: calc(var(--r) * 1.5);
+                    background: $color-text-light;
+                    position: relative;
+                }
 
-            .pill + .pill {
-                margin-left: calc(-1 * var(--overlap));
-            }
+                .pill + .pill {
+                    margin-left: calc(-1 * var(--overlap));
+                }
             }
 
             .look-more {
