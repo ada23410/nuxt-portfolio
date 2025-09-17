@@ -123,15 +123,14 @@ export function mapPageToCard(page: any) {
 
     return {
         id: page.id,
-        slug: p.Slug?.rich_text?.[0]?.plain_text ?? page.id,
-        title: p.Title?.title?.[0]?.plain_text ?? '',
-        published_at: p.Date?.date?.start ?? '',
-        description: p.Excerpt?.rich_text?.[0]?.plain_text ?? '',
-        image_url: heroUrl(page, p),
+        slug: p.Slug?.rich_text?.[0]?.plain_text || page.id,
+        title: p.Title?.title?.[0]?.plain_text || 'Untitled',
+        description: p.Excerpt?.rich_text?.[0]?.plain_text || '',
+        cover: firstFileUrl(p['Hero Image']) || page.cover?.file?.url || page.cover?.external?.url || null,
+        published_at: p.Date?.date?.start || '',
         tags: (p.Category?.multi_select ?? []).map((t: any) => t.name),
-
-        side_type: String(sideType).toLowerCase(), // 'image'|'circle'|'pills'|'triangle'|'none'
-        side_image: sideImage,
+        side_type: (p['Side Type']?.select?.name ?? 'none').toLowerCase(),
+        side_image_url: firstFileUrl(p['Side Image']) || null   // ← 新增這行
     }
 }
 

@@ -43,7 +43,7 @@ export default defineEventHandler(async (event) => {
   const notion = new Client({ auth: notionToken, notionVersion: '2025-09-03' })
   const idOrSlug = String(event.context.params!.id)
 
-  // 1) 解析 pageId（UUID 直接用；否則用 Slug + Type=Project 去查）
+  // 1) 解析 pageId
   let pageId = idOrSlug
   if (!isUUID(idOrSlug)) {
     const res = await notion.dataSources.query({
@@ -67,7 +67,10 @@ export default defineEventHandler(async (event) => {
   const page = await notion.pages.retrieve({ page_id: pageId })
   const rawBlocks = await fetchAllBlocks(notion, pageId)
 
-  // 3) 正規化 blocks（保留常見型別）
+  // 用來存第一張圖
+  let firstImage: string | null = null
+
+  // 3) 正規化 blocks
   const blocks = rawBlocks.map((b: any) => {
     const pl = (x?: any[]) => (x ?? []).map((t: any) => t.plain_text).join('')
     switch (b.type) {
@@ -80,6 +83,7 @@ export default defineEventHandler(async (event) => {
       case 'image': {
         const src = b.image?.file?.url || b.image?.external?.url
         const caption = pl(b.image?.caption)
+        if (!firstImage) firstImage = src // 只記第一張
         return { id: b.id, type: 'img', src, caption }
       }
       case 'bulleted_list_item': return { id: b.id, type: 'li', variant: 'bullet',  text: pl(b.bulleted_list_item.rich_text) }
@@ -100,8 +104,13 @@ export default defineEventHandler(async (event) => {
     cover: heroUrl(page, p),
     side_type: (p['Side Type']?.select?.name ?? 'none').toLowerCase(),
     side_image_url: (() => {
+      // 1) 優先取 Side Image 欄位
       const f = (p['Side Image']?.files ?? [])[0]
-      return f?.file?.url || f?.external?.url || null
+      if (f?.file?.url || f?.external?.url) {
+        return f.file?.url || f.external?.url
+      }
+      // 2) 否則用內文第一張圖
+      return firstImage
     })()
   }
 

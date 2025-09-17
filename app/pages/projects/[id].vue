@@ -13,7 +13,6 @@
     <div class="article-body">
       <!-- 有 cover 再套背景，避免 url(undefined) -->
       <div class="img" :style="post.cover ? { backgroundImage: `url(${post.cover})` } : {}"></div>
-
       <div class="content">
         <div class="author">
           <div class="name">
@@ -30,19 +29,14 @@
           <template v-if="nodes.length">
             <template v-for="(n, i) in nodes" :key="i">
               <p v-if="n.type === 'p'">{{ n.text }}</p>
-
               <h1 v-else-if="n.type === 'h1'">{{ n.text }}</h1>
               <h2 v-else-if="n.type === 'h2'">{{ n.text }}</h2>
               <h3 v-else-if="n.type === 'h3'">{{ n.text }}</h3>
-
               <blockquote v-else-if="n.type === 'quote'">{{ n.text }}</blockquote>
-
               <ul v-else-if="n.type === 'ul'">
                 <li v-for="(li, j) in n.children" :key="j">{{ li.text }}</li>
               </ul>
-
               <hr v-else-if="n.type === 'divider'" />
-
               <figure v-else-if="n.type === 'img'" class="img-wrap">
                 <img :src="n.src" :alt="n.caption || ''" />
                 <figcaption v-if="n.caption">{{ n.caption }}</figcaption>
