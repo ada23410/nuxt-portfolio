@@ -89,7 +89,6 @@ const TAGS = computed(() => [
 .container {
     padding: 10rem 14rem;
     background-color: $color-bg;
-
     .resources-head {
         display: flex;
         justify-content: space-between;
@@ -121,6 +120,9 @@ const TAGS = computed(() => [
         font-weight: 400;
         color: $color-text;
         }
+    }
+    .resources-body {
+        margin: 8rem 0;
     }
 }
 </style>

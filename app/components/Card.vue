@@ -56,7 +56,6 @@ const itemTo = (it) => `${props.basePath}/${encodeURIComponent(String(it.id))}`
 .wrap-box {
     position: relative; 
     z-index: 1; 
-    padding: 10rem 0;
     display: grid; 
     grid-template-columns: repeat(2, 1fr); 
     justify-items: center; 
@@ -67,14 +66,20 @@ const itemTo = (it) => `${props.basePath}/${encodeURIComponent(String(it.id))}`
         width: 100%; 
         max-width: 540px; 
         color: inherit; 
-        text-decoration: none; }
-    .img { 
-        width: 100%; 
-        aspect-ratio: 1 / 1; 
-        border-radius: 60px; 
-        background-color: $color-text-light; 
-        background-size: cover; 
-        background-position: center; }
+        text-decoration: none; 
+        padding: 5rem 0; 
+        .img { 
+            width: 100%; 
+            aspect-ratio: 1 / 1; 
+            border-radius: 60px; 
+            background-color: $color-text-light; 
+            background-size: cover; 
+            background-position: center; 
+        }
+        .card-body { 
+            margin-top: 1.5rem; 
+        }
+    }
     .card-body { 
         margin-top: 1.5rem; }
     .title { 

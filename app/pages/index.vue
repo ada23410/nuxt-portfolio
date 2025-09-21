@@ -210,7 +210,7 @@ onBeforeUnmount(() => {
         .project-card {
             position: relative; 
             z-index: 1; 
-            padding: 10rem 0; 
+            padding: 5rem 0; 
             width: 100%; 
             min-height: 600px;
             display: flex; 
@@ -271,7 +271,7 @@ onBeforeUnmount(() => {
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                padding: 10rem 0;
+                padding: 5rem 0;
 
                 .pill {
                     width: var(--w);

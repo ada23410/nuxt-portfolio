@@ -70,6 +70,7 @@
         }
     }
     .contact-body {
+        margin: 8rem 0; 
         .warp-box{ 
             margin-bottom: 8rem;
             .inorganic {
