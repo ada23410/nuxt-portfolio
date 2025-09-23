@@ -32,9 +32,9 @@
                             <ul>
                                 <li>
                                     <div>第32屆台灣人因工程年會暨國際研討會發表</div>
-                                    <div>整合生成式人工智慧與地端大型語言模型於未來教育的推測設計</div>
+                                    <div>整合生成式人工智慧與地端大型語言模型於未來教育的推測設計 最佳口頭發表論文獎</div>
                                     <div>Speculative Design on Integrating AIGC and the Local Large Language Model for Future Education</div>
-                                    <div>導入對話機器人於數位文化探針之設計與評估</div>
+                                    <div>導入對話機器人於數位文化探針之設計與評估 最佳口頭發表論文獎</div>
                                     <div>Applying ChatBot in the Design and Evaluation of Digital Cultural Probes</div>
                                 </li>
                                 <li>
