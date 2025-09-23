@@ -14,18 +14,25 @@
         <div class="kv-section" ref="projectSection">
         <div class="section-title">Project</div>
         <div class="project-card">
-            <div class="square" data-speed="0.15"></div>
-            <div class="circle" data-speed="0.25"></div>
-            <div class="triangle" data-speed="0.35">
-                <div class="img"></div>
-            </div>
+            <NuxtLink
+                    v-for="(project, index) in projects"
+                    :key="project.id"
+                    :to="`/projects/${project.id}`"
+                    class="project-shape"
+                >
+                    <div
+                        :class="shapeClass(index)"
+                        :style="{ backgroundImage: `url(${project.cover || ''})` }"
+                    >
+                </div>
+            </NuxtLink>
         </div>
         <div class="look-more">
             <NuxtLink to="/projects">
-            <div class="description">DISCOVER PROJECTS</div>
-            <div class="arrow" aria-hidden="true">
-                <i>→</i><i>→</i><i>→</i>
-            </div>
+                <div class="description">DISCOVER PROJECTS</div>
+                <div class="arrow" aria-hidden="true">
+                    <i>→</i><i>→</i><i>→</i>
+                </div>
             </NuxtLink>
         </div>
         </div>
@@ -33,7 +40,6 @@
         <div class="resources" ref="resourcesRef">
         <div class="resources-title">Resources</div>
         <div class="resource-card" data-speed="0.22">
-            <!-- 先保留靜態卡片；之後可換成 v-for 渲染 Notion posts -->
             <Card :items="items" base-path="/resources"/>
         </div>
 
@@ -68,16 +74,36 @@
 import { computed, ref, onMounted, onBeforeUnmount } from 'vue'
 import Card from '@/components/Card.vue'
 
-const { data, pending, error } = await useFetch('/api/resources', {
+function shapeClass(index) {
+    if (index === 0) return 'square'
+    if (index === 1) return 'circle'
+    if (index === 2) return 'triangle'
+    return ''
+}
+// get resources
+const { data: resourcesData } = await useFetch('/api/resources', {
     query: { 
         limit: 2 
-    },           // 也可以加 tag: 'Nuxt.js'
+    },
     default: () => ({ 
         items: [] 
     })
 })
 
-const items = computed(() => data.value?.items ?? [])
+const items = computed(() => resourcesData.value?.items ?? [])
+
+// get projects
+const { data: projectsData } = await useFetch('/api/projects', {
+    query: { 
+        limit: 3 
+    },
+    default: () => ({ 
+        items: [] 
+    })
+})
+
+// 取出 items，避免 null
+const projects = computed(() => projectsData.value?.items ?? [])
 
 /** 啟用某個區塊內的視差 */
 function useParallaxSection(sectionEl, selector, strength = 220) {
@@ -208,52 +234,47 @@ onBeforeUnmount(() => {
             top: 0%; 
         }
         .project-card {
-            position: relative; 
-            z-index: 1; 
-            padding: 5rem 0; 
-            width: 100%; 
+            display: flex;
+            justify-content: space-between;
             min-height: 600px;
-            display: flex; 
-            justify-content: space-between; 
-            gap: 2rem;
-        > div { 
-            will-change: transform; 
-        }
-
-        .square {
-            width: 100%; 
-            max-width: 387px; 
-            aspect-ratio: 1 / 1;
-            background-color: $color-text-light; 
-            border-radius: 60px; 
-            align-self: center;
-        }
-        .circle {
-            width: 100%;
-            max-width: 387px; 
-            aspect-ratio: 1 / 1;
-            background-color: $color-text-light; 
-            border-radius: 50%; 
-            align-self: flex-end;
-        }
-        .triangle { 
-            width: 100%;
-            max-width: 387px;
-            aspect-ratio: 1/1;
-            align-self: flex-start;
-            overflow: hidden;
-                .img {
+            gap: 2rem; 
+            padding: 5rem 0;
+            .project-shape {
+                width: 378px;
+                aspect-ratio: 1/1;
+                background-size: cover;
+                background-position: center;
+                display: flex;                  // 內層再包 shape
+                justify-content: center;
+                align-items: center;
+                .square {
+                    align-self: center;
                     width: 100%;
-                    height: 100%;
-                    background-size: cover;
-                    background-position: center;
-                    background-color: $color-text-light; 
+                    max-width: 387px;
+                    aspect-ratio: 1/1;
+                    background-color: $color-text-light;
+                    border-radius: 60px;
+                }
 
+                .circle {
+                    align-self: flex-end;
+                    width: 100%;
+                    max-width: 387px;
+                    aspect-ratio: 1/1;
+                    background-color: $color-text-light;
+                    border-radius: 50%;
+                }
+
+                .triangle {
+                    align-self: flex-start;
+                    width: 100%;
+                    max-width: 387px;
+                    aspect-ratio: 1/1;
+                    background-color: $color-text-light;
                     -webkit-mask-image: url('/rounded-triangle.svg');
                     -webkit-mask-repeat: no-repeat;
                     -webkit-mask-size: contain;
                     -webkit-mask-position: center;
-
                     mask-image: url('/rounded-triangle.svg');
                     mask-repeat: no-repeat;
                     mask-size: contain;
