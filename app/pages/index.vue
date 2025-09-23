@@ -2,12 +2,12 @@
     <div class="container">
         <div class="Hero-section">
         <div>
-            <h1>Designing with Empathy,</h1>
-            <h2>Developing with Precision.</h2>
+            <h1 id="typed-line1"></h1>
+            <h2 id="typed-line2"></h2>
         </div>
         <div>
             <p>
-            專注於體驗細節與效能品質，將設計與開發融入可靠的數位服務，讓每一次互動都兼具人性的溫度與科技的精準。
+                專注於體驗細節與效能品質，將設計與開發融入可靠的數位服務，讓每一次互動都兼具人性的溫度與科技的精準。
             </p>
         </div>
         </div>
@@ -54,10 +54,14 @@
         </div>
         <div class="about" ref="aboutRef">
         <div class="about-title">About</div>
-        <div class="inorganic" data-speed="0.40">
-            <span class="pill"></span><span class="pill"></span><span class="pill"></span>
-            <span class="pill"></span><span class="pill"></span><span class="pill"></span>
-        </div>
+        <NuxtLink class="inorganic" data-speed="0.40">
+                <span class="pill"></span>
+                <span class="pill"></span>
+                <span class="pill"></span>
+                <span class="pill"></span>
+                <span class="pill"></span>
+                <span class="pill"></span>    
+        </NuxtLink>
         <div class="look-more">
             <NuxtLink to="/about">
                 <div class="description">DISCOVER ABOUT ME</div>
@@ -72,6 +76,7 @@
 
 <script setup>
 import { computed, ref, onMounted, onBeforeUnmount } from 'vue'
+import Typed from 'typed.js'
 import Card from '@/components/Card.vue'
 
 function shapeClass(index) {
@@ -175,6 +180,21 @@ onMounted(() => {
     if (aboutRef.value) {
         cleanups.push(useParallaxSection(aboutRef.value, '.inorganic', 220))
     }
+    new Typed('#typed-line1', {
+        strings: ["Designing with Empathy,"],
+        typeSpeed: 60,
+        backSpeed: 0,   
+        startDelay: 500,
+        showCursor: false,
+        onComplete: () => {
+        // 第一行打完後接著打第二行
+            new Typed('#typed-line2', {
+                strings: ["Developing with Precision."],
+                typeSpeed: 60,
+                startDelay: 300
+            })
+        }
+    })
 })
 
 onBeforeUnmount(() => {
@@ -191,11 +211,11 @@ onBeforeUnmount(() => {
         display: flex; 
         justify-content: space-between; 
         align-items: end;
-        h1 { 
+        #typed-line1 { 
             font-size: $font-size-giant; 
             font-family: "La Belle Aurore", cursive; 
             line-height: 5.5rem; }
-        h2 { 
+        #typed-line2 { 
             font-size: $font-size-giant; 
             font-weight: 600; 
             line-height: 5rem; 
@@ -284,28 +304,52 @@ onBeforeUnmount(() => {
         }
 
         .inorganic {
-                --h: clamp(540px, 30vw, 630px);
-                --w: clamp(260px, 20vw, 260px);
-                --r: 90px;
-                --overlap: 10px;
-
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                padding: 5rem 0;
-
-                .pill {
-                    width: var(--w);
-                    height: var(--h);
-                    border-radius: calc(var(--r) * 1.5);
-                    background: $color-text-light;
-                    position: relative;
+            --h: clamp(540px, 30vw, 630px);   // 高度（響應式）
+            --w: clamp(260px, 20vw, 260px);   // 寬度
+            --r: 90px;                        // 圓角
+            --overlap: 10px;                  // 重疊量（越大縫隙越小）
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 5rem 0;
+            .pill {
+                width: var(--w);
+                height: var(--h);
+                border-radius: calc(var(--r) * 1.5);
+                background-image: url('/avatar-01.png'); 
+                background-size: cover;
+                background-repeat: no-repeat;
+                background-position: center; // 預設
+                background-blend-mode: multiply; 
+                &:nth-child(1) { 
+                    background-position: 0% 20%; 
+                    filter: brightness(1.2);
                 }
-
-                .pill + .pill {
-                    margin-left: calc(-1 * var(--overlap));
+                &:nth-child(2) { 
+                    background-position: 20% 40%; 
+                    filter: brightness(1);
+                }
+                &:nth-child(3) { 
+                    background-position: 40% 60%; 
+                    filter: brightness(.9);
+                }
+                &:nth-child(4) { 
+                    background-position: 60% 80%; 
+                    filter: brightness(.8);
+                }
+                &:nth-child(5) { 
+                    background-position: 80% 100%; 
+                    filter: brightness(.7);
+                }
+                &:nth-child(6) { 
+                    background-position: 100% 50%; 
+                    filter: brightness(.6);
                 }
             }
+            .pill + .pill {
+                margin-left: calc(-1 * var(--overlap));
+            }
+        }
 
             .look-more {
             text-align: left;
