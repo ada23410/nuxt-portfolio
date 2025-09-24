@@ -5,10 +5,11 @@
             <h1 id="typed-line1"></h1>
             <h2 id="typed-line2"></h2>
         </div>
-        <div>
-            <p>
+        <div class="img-wrap">
+            <!-- <p>
                 專注於體驗細節與效能品質，將設計與開發融入可靠的數位服務，讓每一次互動都兼具人性的溫度與科技的精準。
-            </p>
+            </p> -->
+            <div class="img"></div>
         </div>
         </div>
         <div class="kv-section" ref="projectSection">
@@ -221,12 +222,26 @@ onBeforeUnmount(() => {
             line-height: 5rem; 
             width: 70%; 
         }
-        p  {
-            max-width: 26rem; 
-            font-size: $font-size-base; 
-            line-height: 2rem; 
-            font-weight: 400; 
-            color: $color-text; 
+        // p  {
+        //     max-width: 26rem; 
+        //     font-size: $font-size-base; 
+        //     line-height: 2rem; 
+        //     font-weight: 400; 
+        //     color: $color-text; 
+        // }
+        .img-wrap {
+            position: absolute;
+            right: 18rem;
+            top: 3rem;
+            width: 600px;
+            height: 600px;
+            background-image: url('/kv-img.png');
+            background-size: cover;
+            background-repeat: no-repeat;
+            .img {
+                width: 100%;
+                height: 100%;
+            }
         }
     }
 
@@ -247,7 +262,7 @@ onBeforeUnmount(() => {
         }
         .resources-title { 
             @extend .section-title; 
-            top: -3%; 
+            top: -5%; 
         }
         .about-title     { 
             @extend .section-title; 
