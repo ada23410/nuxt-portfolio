@@ -170,12 +170,15 @@ watchEffect(() => {
       background-size: cover; background-position: center;
     }
     .content {
-      display: flex; justify-content: space-between; align-items: flex-start; gap: 5rem;
-
+      display: flex; 
+      justify-content: space-between; 
+      align-items: flex-start; 
+      gap: 2rem;
       .author {
         flex: 1;
         .name { 
           font-size: $font-size-lg;
+          color: $color-text;
           font-weight: 500; 
         }
         .tag { 
@@ -192,7 +195,7 @@ watchEffect(() => {
       }
 
       .contents {
-        flex: 4;
+        flex: 3;
         :deep(p) {
           font-size: $font-size-base;
           line-height: 2.5rem;

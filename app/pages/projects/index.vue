@@ -25,15 +25,26 @@
     <div v-else-if="error" class="empty">Failed: {{ error.message }}</div>
 
     <!-- 列表 -->
-    <div v-else class="project-body">
-      <ProjectRow
+    <!-- 列表 -->
+    <TransitionGroup
+      v-else
+      name="stack"
+      tag="div"
+      class="project-body"
+      appear
+    >
+      <div
         v-for="(it, idx) in items"
         :key="it.id"
-        :item="it"
-        :flip="idx % 2 === 1"
-      />
-      <div v-if="!rows.length" class="empty">No projects.</div>
-    </div>
+        class="row stack-item"
+        :style="{ '--i': idx }"
+      >
+        <ProjectRow :item="it" :flip="idx % 2 === 1" />
+      </div>
+    </TransitionGroup>
+
+    <!-- 空狀態（放在 group 外，避免被 transition class 影響） -->
+    <div v-if="!items.length" class="empty">No projects.</div>
   </div>
 </template>
 
@@ -93,6 +104,7 @@ const selectTag = (v) => (tag.value = v)
     .title {
         h1 { 
             font-size: $font-size-giant; 
+            color: $color-text;
             font-weight: 600; 
         }
         .category {
@@ -117,7 +129,27 @@ const selectTag = (v) => (tag.value = v)
         color: $color-text; }
 }
 .project-body { 
-    margin: 8rem 0; 
+    display: grid;
+    margin: 8rem 0;
+    gap: 3rem; 
+}
+ /* 進場/離場 */
+.stack-enter-from, 
+.stack-leave-to { 
+  opacity: 0; 
+  transform: translateY(24px) scale(.98); 
+}
+.stack-enter-active, .stack-leave-active { 
+  transition: transform .5s ease, 
+  opacity .5s ease; 
+}
+/* 移動動畫（重新排序） */
+.stack-move { 
+  transition: transform .5s ease; 
+}
+/* 逐格延遲（同上用 --i） */
+.project-body > .row { 
+  transition-delay: calc(var(--i) * 90ms); 
 }
 .loading, .empty { 
     text-align: center; 
