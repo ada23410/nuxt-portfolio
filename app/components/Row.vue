@@ -147,46 +147,46 @@ const to = (it: any) =>
         }
 
         .title {
-        display: flex;
-        justify-content: space-between;
-        align-items: baseline;
-        margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 1rem;
 
-        .text {
-            font-size: $font-size-xxl;
-            font-weight: 500;
-            color: $color-text;
-        }
+            .text {
+                font-size: $font-size-xl;
+                font-weight: 500;
+                color: $color-text;
+            }
 
-        .time {
-            font-size: $font-size-lg;
+            .time {
+                font-size: $font-size-lg;
+                color: $color-text-light;
+            }
+            }
+
+            .description {
+            p {
+                font-size: $font-size-base;
+                font-weight: 300;
+                color: $color-text-light;
+                text-align: justify;
+                line-height: 1.5rem;
+            }
+            }
+
+            .tag-list {
+            margin-top: 1.5rem;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
             color: $color-text-light;
-        }
-        }
 
-        .description {
-        p {
-            font-size: $font-size-base;
-            font-weight: 300;
-            color: $color-text-light;
-            text-align: justify;
-            line-height: 1.5rem;
-        }
-        }
-
-        .tag-list {
-        margin-top: 1.5rem;
-        display: flex;
-        align-items: center;
-        flex-wrap: wrap;
-        color: $color-text-light;
-
-        .tag {
-            padding: 0.5rem 1rem;
-            border: 0.5px solid $color-border;
-            border-radius: 50px;
-            margin-right: 0.5rem;
-        }
+            .tag {
+                padding: 0.5rem 1rem;
+                border: 0.5px solid $color-border;
+                border-radius: 50px;
+                margin-right: 0.5rem;
+            }
         }
 
         .look-more {

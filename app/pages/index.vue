@@ -6,10 +6,9 @@
             <h2 id="typed-line2"></h2>
         </div>
         <div class="img-wrap">
-            <!-- <p>
+            <p>
                 專注於體驗細節與效能品質，將設計與開發融入可靠的數位服務，讓每一次互動都兼具人性的溫度與科技的精準。
-            </p> -->
-            <div class="img"></div>
+            </p>
         </div>
         </div>
         <div class="kv-section" ref="projectSection">
@@ -207,7 +206,6 @@ onBeforeUnmount(() => {
 .container {
     padding: 10rem 14rem;
     background-color: $color-bg;
-
     .Hero-section {
         display: flex; 
         justify-content: space-between; 
@@ -222,26 +220,12 @@ onBeforeUnmount(() => {
             line-height: 5rem; 
             width: 70%; 
         }
-        // p  {
-        //     max-width: 26rem; 
-        //     font-size: $font-size-base; 
-        //     line-height: 2rem; 
-        //     font-weight: 400; 
-        //     color: $color-text; 
-        // }
-        .img-wrap {
-            position: absolute;
-            right: 18rem;
-            top: 3rem;
-            width: 600px;
-            height: 600px;
-            background-image: url('/kv-img.png');
-            background-size: cover;
-            background-repeat: no-repeat;
-            .img {
-                width: 100%;
-                height: 100%;
-            }
+        p  {
+            max-width: 26rem; 
+            font-size: $font-size-base; 
+            line-height: 2rem; 
+            font-weight: 400; 
+            color: $color-text; 
         }
     }
 

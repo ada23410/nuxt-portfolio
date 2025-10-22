@@ -83,6 +83,9 @@ function toNodes(input) {
     if (b && typeof b === 'object' && 'type' in b && !('paragraph' in b)) {
       switch (b.type) {
         case 'p':       flushUl(); if (b.text) out.push({ type: 'p', text: b.text }); break
+        case 'h1':      flushUl(); if (b.text) out.push({ type: 'h1', text: b.text }); break
+        case 'h2':      flushUl(); if (b.text) out.push({ type: 'h2', text: b.text }); break
+        case 'h3':      flushUl(); if (b.text) out.push({ type: 'h3', text: b.text }); break
         case 'quote':   flushUl(); if (b.text) out.push({ type: 'quote', text: b.text }); break
         case 'divider': flushUl(); out.push({ type: 'divider' }); break
         case 'img':     flushUl(); if (b.src) out.push({ type: 'img', src: b.src, caption: b.caption }); break
@@ -145,8 +148,18 @@ watchEffect(() => {
   .article-head {
     display: flex; justify-content: space-between; align-items: flex-start;
     .title {
-      h1 { font-size: $font-size-giant; font-weight: 600; margin-bottom: 1rem; }
-      h2 { font-size: $font-size-xl; font-weight: 500; color: $color-text-light; }
+      h1 { 
+        font-size: $font-size-display; 
+        line-height: 3rem;
+        font-weight: 600; 
+        color: $color-text;
+        margin-bottom: 1rem; 
+      }
+      h2 { 
+        font-size: $font-size-xl; 
+        font-weight: 400; 
+        color: $color-text-light; 
+      }
     }
   }
 
@@ -161,18 +174,53 @@ watchEffect(() => {
 
       .author {
         flex: 1;
-        .name { font-size: $font-size-lg; font-weight: 500; }
-        .tag { margin-top: 2rem; font-size: $font-size-sm; color: $color-text-light;
-          span { padding: .5rem 1rem; border: .5px solid $color-border; border-radius: 50px; margin-right: .5rem; }
+        .name { 
+          font-size: $font-size-lg;
+          font-weight: 500; 
+        }
+        .tag { 
+          margin-top: 2rem;
+          font-size: $font-size-sm;
+          color: $color-text-light;
+          span { 
+            padding: .5rem 1rem;
+            border: .5px solid $color-border;
+            border-radius: 50px;
+            margin-right: .5rem; 
+          }
         }
       }
 
       .contents {
         flex: 4;
+        :deep(p) {
+          font-size: $font-size-base;
+          line-height: 2.5rem;
+          color: $color-text-light;
+          text-align: justify;
+          text-indent: 2em;
+          margin-bottom: 2rem;
+        }
+        :deep(h3) {
+          font-size: $font-size-xl;
+          line-height: 1.5rem;
+          color: $color-text;
+          margin-bottom: 1rem;
+        }
 
-        .subtitle { font-size: $font-size-xxl; font-weight: 500; margin-bottom: 1rem; }
-        .paragraph { font-size: $font-size-base; font-weight: 300; color: $color-text-light; text-align: justify; line-height: 1.5rem; margin-bottom: 2rem; }
-
+        .subtitle { 
+          font-size: $font-size-xxl;
+          font-weight: 500;
+          margin-bottom: 1rem; 
+        }
+        .paragraph { 
+          font-size: $font-size-base;
+          font-weight: 300;
+          color: $color-text-light;
+          text-align: justify;
+          line-height: 1.5rem; 
+          margin-bottom: 2rem; 
+        }
         .img { margin: 5rem 0; width: 100%; max-height: 540px; aspect-ratio: 1/1; border-radius: 60px; background-color: $color-text-light; }
       }
     }
