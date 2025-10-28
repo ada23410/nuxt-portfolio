@@ -1,19 +1,25 @@
 <template>
     <div class="container">
         <div class="Hero-section">
-        <div>
-            <h1 id="typed-line1"></h1>
-            <h2 id="typed-line2"></h2>
-            <h3 id="typed-line3"></h3>
-        </div>
-        <div>
-            <p>
-                From understanding people to shaping meaningful change.
-            </p>
-        </div> 
+            <div>
+                <h1 id="typed-line1"></h1>
+                <h2 id="typed-line2"></h2>
+                <h3 id="typed-line3"></h3>
+            </div>
+            <div>
+                <p id="typed-line4"></p>
+            </div>
+            <div class="scroll">
+                <a href="#">
+                    <div class="description">SCROLL TO DISCOVER</div>
+                    <div class="arrow" aria-hidden="true">
+                        <i>↓</i><i>↓</i><i>↓</i>
+                    </div>
+                </a>
+            </div>
         </div>
         <div class="kv-section" ref="projectSection">
-        <!-- <div class="section-title">Project</div> -->
+        <div class="section-title">Project</div>
         <div class="project-card">
             <NuxtLink
                     v-for="(project, index) in projects"
@@ -190,24 +196,51 @@ onMounted(() => {
     showCursor: false,
     onComplete: () => {
         document.querySelector('#typed-line1').classList.add('underline-animate');
+        document.querySelector('#typed-line1').insertAdjacentHTML(
+            'beforeend',
+            `<img 
+                src="/hero_animate.gif" 
+                class="underline-gif" style="width: 300px;
+                height: auto;  
+                position: absolute;
+                bottom: 1rem;
+                right: -18rem;
+                transform: rotate(-15deg);
+                transform-origin: left bottom;"
+                alt="underline animation"
+            >`
+        );
         new Typed('#typed-line2', {
         strings: ["into stories"],
         typeSpeed: 60,
         startDelay: 300,
         showCursor: false,
         onComplete: () => {
-            document.querySelector('#typed-line2').classList.add('underline-animate');
-            new Typed('#typed-line3', {
-            strings: ["that create impact."],
-            typeSpeed: 60,
-            startDelay: 300,
-            showCursor: false,
-            onComplete: () => {
-                document.querySelector('#typed-line3').classList.add('underline-animate');
-            }
-            })
+            const line2 = document.querySelector('#typed-line2');
+            line2.innerHTML = line2.innerHTML.replace(
+                'stories',
+                '<span class="highlight-green" style="color: #66cc66;">stories</span>'
+                );
+            line2.classList.add('underline-animate');
+            line2.addEventListener('animationend', () => {
+                new Typed('#typed-line3', {
+                    strings: ["that inspire change."],
+                    typeSpeed: 60,
+                    startDelay: 450,
+                    showCursor: false,
+                    onComplete: () => {
+                        document.querySelector('#typed-line3').classList.add('underline-animate');
+                        new Typed('#typed-line4', {
+                            strings: ["從理解人開始，邁向解決問題的設計"],
+                            typeSpeed: 60,
+                            startDelay: 450,
+                            showCursor: false,
+                        })
+                    }
+                });
+            }, { once: true });
         }
-        })
+        });
     }
     })
 })
@@ -227,36 +260,36 @@ onBeforeUnmount(() => {
         #typed-line1 { 
             text-align: center;
             color: $color-text;
-            font-size: 7rem;
+            font-size: 6rem;
             font-weight: 500;  
-            line-height: 7rem; 
+            line-height: 6rem; 
             display: inline-block;
             position: relative;
             z-index: 1;
         }
         #typed-line2 { 
-            text-align: left;
+            text-align:right;
             color: $color-text;
-            font-size: 7rem; 
+            font-size: 6rem; 
             font-weight: 500;  
-            line-height: 7rem;
+            line-height: 6rem;
             display: inline-block;
             position: relative; 
             z-index: 1;
         }
         #typed-line3 {
-            text-align: right;
+            text-align: left;
             color: $color-text;
-            font-size: 7rem; 
+            font-size: 6rem; 
             font-weight: 500;  
-            line-height: 7rem;
+            line-height: 6rem;
             display: inline-block;
             position: relative; 
             z-index: 1; 
         } 
         p  {
-            margin: 1rem 0;
-            text-align: right;
+            margin: 1.5rem 0;
+            text-align: left;
             font-size: $font-size-base; 
             line-height: 1rem;
             font-weight: 400; 
@@ -265,7 +298,7 @@ onBeforeUnmount(() => {
         .underline-animate::after {
                 content: '';
                 position: absolute;
-                bottom: 1rem;
+                bottom: 0.9rem;
                 left: 0;
                 width: 0;
                 height: 2px;
@@ -276,6 +309,70 @@ onBeforeUnmount(() => {
             @keyframes underlineGrow {
             to {
                 width: 100%;
+            }
+        }
+        .scroll {
+            text-align: center;
+            margin: 5rem 0 0 0;
+            --gap: .75rem;
+            --dur: .36s;
+            a {
+                display: inline-flex;
+                align-items: center;
+                gap: var(--gap);
+                text-decoration: none;
+                color: $color-text;
+
+                .description {
+                    font-size: $font-size-base;
+                    font-weight: 500;
+                    margin-right: .25rem;
+                    transition: transform var(--dur) ease;
+                }
+
+                .arrow {
+                font-size: $font-size-base;
+                position: relative;
+                display: inline-grid;
+                grid-auto-flow: row;
+                grid-auto-columns: 1.2em;
+                overflow: hidden;
+                width: 1.2em;
+                transition: width var(--dur) ease;
+
+                i {
+                    display: inline-block;
+                    transform: translateY(-100%);
+                    opacity: 0;
+                    transition: transform var(--dur) ease, opacity var(--dur) ease;
+
+                    &:nth-child(1) {
+                    transform: translateX(0);
+                    opacity: 1;
+                    }
+                }
+                }
+
+                &:hover,
+                &:focus-visible {
+                color: $color-text;
+
+                .description {
+                    transform: translateX(.2rem);
+                }
+
+                .arrow {
+                    width: 4em;
+
+                    i {
+                    transform: translateX(0);
+                    opacity: 1;
+
+                    &:nth-child(2) { transition-delay: .04s; }
+                    &:nth-child(3) { transition-delay: .08s; }
+                    }
+                }
+                }
             }
         }
     }
@@ -398,7 +495,7 @@ onBeforeUnmount(() => {
             }
         }
 
-            .look-more {
+        .look-more {
             text-align: left;
             --gap: .75rem;
             --dur: .36s;
