@@ -9,7 +9,6 @@
         >
         <article class="card">
             <div class="card-head">
-                <!-- 有圖用 <img>，提升 LCP/SEO；沒圖給純背景色 -->
                 <img
                     v-if="item.cover"
                     :src="item.cover"
@@ -33,7 +32,7 @@
             </div>
             </div>
         </article>
-        </NuxtLink>
+    </NuxtLink>
     </div>
 </template>
 
@@ -77,37 +76,37 @@ const itemTo = (it) => `${props.basePath}/${encodeURIComponent(String(it.id))}`
             background-position: center; 
         }
         .card-body { 
-            margin-top: 1.5rem; 
+            margin-top: 1.5rem;
+            .title { 
+                .text { 
+                    font-size: $font-size-xxl; 
+                    font-weight: 500; 
+                    margin-bottom: 1rem;
+                }
+                .time { 
+                    font-size: $font-size-lg;
+                    color: $color-text-light; 
+                }
+            }
+            .description {
+                p{
+                    margin-top: 1rem; 
+                    color: $color-text-light; 
+                    line-height: 1.5rem; 
+                    text-align: justify; 
+                }
+                .tag { 
+                    margin-top: 1.5rem; 
+                    color: $color-text-light;
+                    span { 
+                        padding: .5rem 1rem; 
+                        border: .5px solid $color-border; 
+                        border-radius: 50px; 
+                        margin-right: .5rem; 
+                    }   
+                }
+            } 
         }
-    }
-    .card-body { 
-        margin-top: 1.5rem; }
-    .title { 
-        .text { 
-            font-size: $font-size-xxl; 
-            font-weight: 500; 
-            margin-bottom: 1rem;
-        }
-        .time { 
-            font-size: $font-size-lg;
-            color: $color-text-light; 
-        }
-    }
-    .description p {  
-        margin-top: 1rem; 
-        color: $color-text-light; 
-        line-height: 1.5rem; 
-        text-align: justify; 
-    }
-    .tag { 
-        margin-top: 1.5rem; 
-        color: $color-text-light; 
-    }
-    .tag span { 
-        padding: .5rem 1rem; 
-        border: .5px solid $color-border; 
-        border-radius: 50px; 
-        margin-right: .5rem; 
     }
 }
 </style>

@@ -4,15 +4,16 @@
         <div>
             <h1 id="typed-line1"></h1>
             <h2 id="typed-line2"></h2>
+            <h3 id="typed-line3"></h3>
         </div>
-        <div class="img-wrap">
+        <div>
             <p>
-                專注於體驗細節與效能品質，將設計與開發融入可靠的數位服務，讓每一次互動都兼具人性的溫度與科技的精準。
+                From understanding people to shaping meaningful change.
             </p>
-        </div>
+        </div> 
         </div>
         <div class="kv-section" ref="projectSection">
-        <div class="section-title">Project</div>
+        <!-- <div class="section-title">Project</div> -->
         <div class="project-card">
             <NuxtLink
                     v-for="(project, index) in projects"
@@ -55,12 +56,12 @@
         <div class="about" ref="aboutRef">
         <div class="about-title">About</div>
         <NuxtLink class="inorganic" data-speed="0.40">
-                <span class="pill"></span>
-                <span class="pill"></span>
-                <span class="pill"></span>
-                <span class="pill"></span>
-                <span class="pill"></span>
-                <span class="pill"></span>    
+            <span class="pill"></span>
+            <span class="pill"></span>
+            <span class="pill"></span>
+            <span class="pill"></span>
+            <span class="pill"></span>
+            <span class="pill"></span>    
         </NuxtLink>
         <div class="look-more">
             <NuxtLink to="/about">
@@ -180,20 +181,34 @@ onMounted(() => {
     if (aboutRef.value) {
         cleanups.push(useParallaxSection(aboutRef.value, '.inorganic', 220))
     }
+    // 第一行
     new Typed('#typed-line1', {
-        strings: ["Designing with Empathy,"],
+    strings: ["Turning insights"],
+    typeSpeed: 60,
+    backSpeed: 0,
+    startDelay: 500,
+    showCursor: false,
+    onComplete: () => {
+        document.querySelector('#typed-line1').classList.add('underline-animate');
+        new Typed('#typed-line2', {
+        strings: ["into stories"],
         typeSpeed: 60,
-        backSpeed: 0,   
-        startDelay: 500,
+        startDelay: 300,
         showCursor: false,
         onComplete: () => {
-        // 第一行打完後接著打第二行
-            new Typed('#typed-line2', {
-                strings: ["Developing with Precision."],
-                typeSpeed: 60,
-                startDelay: 300
+            document.querySelector('#typed-line2').classList.add('underline-animate');
+            new Typed('#typed-line3', {
+            strings: ["that create impact."],
+            typeSpeed: 60,
+            startDelay: 300,
+            showCursor: false,
+            onComplete: () => {
+                document.querySelector('#typed-line3').classList.add('underline-animate');
+            }
             })
         }
+        })
+    }
     })
 })
 
@@ -207,25 +222,61 @@ onBeforeUnmount(() => {
     padding: 10rem 14rem;
     background-color: $color-bg;
     .Hero-section {
-        display: flex; 
-        justify-content: space-between; 
-        align-items: end;
+        max-width: 50vw;
+        margin: 0 auto;
         #typed-line1 { 
-            font-size: $font-size-giant; 
-            font-family: "La Belle Aurore", cursive; 
-            line-height: 5.5rem; }
-        #typed-line2 { 
-            font-size: $font-size-giant; 
-            font-weight: 600; 
-            line-height: 5rem; 
-            width: 70%; 
+            text-align: center;
+            color: $color-text;
+            font-size: 7rem;
+            font-weight: 500;  
+            line-height: 7rem; 
+            display: inline-block;
+            position: relative;
+            z-index: 1;
         }
+        #typed-line2 { 
+            text-align: left;
+            color: $color-text;
+            font-size: 7rem; 
+            font-weight: 500;  
+            line-height: 7rem;
+            display: inline-block;
+            position: relative; 
+            z-index: 1;
+        }
+        #typed-line3 {
+            text-align: right;
+            color: $color-text;
+            font-size: 7rem; 
+            font-weight: 500;  
+            line-height: 7rem;
+            display: inline-block;
+            position: relative; 
+            z-index: 1; 
+        } 
         p  {
-            max-width: 26rem; 
+            margin: 1rem 0;
+            text-align: right;
             font-size: $font-size-base; 
-            line-height: 2rem; 
+            line-height: 1rem;
             font-weight: 400; 
             color: $color-text; 
+        }
+        .underline-animate::after {
+                content: '';
+                position: absolute;
+                bottom: 1rem;
+                left: 0;
+                width: 0;
+                height: 2px;
+                background: $color-border;
+                z-index: -1;    
+                animation: underlineGrow 0.6s ease forwards;
+            }
+            @keyframes underlineGrow {
+            to {
+                width: 100%;
+            }
         }
     }
 
@@ -237,11 +288,8 @@ onBeforeUnmount(() => {
             left: 50%; 
             top: 15%; 
             transform: translateX(-50%);
-            font-size: 15rem; 
-            font-weight: 800; 
-            letter-spacing: -10px; 
-            font-style: italic;
-            color: $color-bg-alt;
+            font-size: $font-size-xxl; 
+            color: $color-text;
             z-index: 0;
         }
         .resources-title { 
@@ -263,7 +311,7 @@ onBeforeUnmount(() => {
                 aspect-ratio: 1/1;
                 background-size: cover;
                 background-position: center;
-                display: flex;                  // 內層再包 shape
+                display: flex;                  
                 justify-content: center;
                 align-items: center;
                 .square {
