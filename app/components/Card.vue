@@ -18,7 +18,6 @@
                 />
                 <div v-else class="img img--placeholder" />
             </div>
-
             <div class="card-body">
             <div class="title">
                 <div class="text">{{ item.title }}</div>
