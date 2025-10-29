@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="projects-main">
     <div class="project-head">
       <div class="title">
         <h1>Recent Project</h1>
@@ -48,6 +48,7 @@
   </div>
 </template>
 
+<style src="@/assets/css/pages/projects.scss" lang="scss"></style>
 <script setup>
 import { computed, ref, watch } from 'vue'
 import ProjectRow from '@/components/Row.vue'
@@ -94,65 +95,3 @@ const rows = computed(() => {
 // 5) 點選分類
 const selectTag = (v) => (tag.value = v)
 </script>
-
-<style scoped lang="scss">
-.container { padding: 10rem 14rem; background: $color-bg; }
-.project-head {
-    display: flex; 
-    justify-content: space-between; 
-    align-items: flex-start;
-    .title {
-        h1 { 
-            font-size: $font-size-giant; 
-            color: $color-text;
-            font-weight: 600; 
-        }
-        .category {
-            margin-top: 2.5rem;
-            .chip {
-                padding: .5rem 1rem;
-                background-color: transparent;
-                font-size: $font-size-base;
-                font-weight: 400;
-                color: $color-text-light;
-                border: .5px solid $color-border;
-                border-radius: 50px;
-                margin-right: .5rem;
-                cursor: pointer;
-            }
-        }
-    }
-    p { 
-        max-width: 26rem; 
-        font-size: $font-size-base; 
-        line-height: 2rem; 
-        color: $color-text; }
-}
-.project-body { 
-    display: grid;
-    margin: 8rem 0;
-    gap: 3rem; 
-}
- /* 進場/離場 */
-.stack-enter-from, 
-.stack-leave-to { 
-  opacity: 0; 
-  transform: translateY(24px) scale(.98); 
-}
-.stack-enter-active, .stack-leave-active { 
-  transition: transform .5s ease, 
-  opacity .5s ease; 
-}
-/* 移動動畫（重新排序） */
-.stack-move { 
-  transition: transform .5s ease; 
-}
-/* 逐格延遲（同上用 --i） */
-.project-body > .row { 
-  transition-delay: calc(var(--i) * 90ms); 
-}
-.loading, .empty { 
-    text-align: center; 
-    color: $color-text-light; 
-}
-</style>
