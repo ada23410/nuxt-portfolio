@@ -111,7 +111,7 @@ const to = (it: any) =>
 
 <style scoped lang="scss">
 .wrap-box {
-    margin-bottom: 14rem;
+    margin-bottom: 8rem;
     display: flex;
     justify-content: space-between;
     align-items: flex-start;

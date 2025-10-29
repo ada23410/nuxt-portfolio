@@ -1,0 +1,142 @@
+.about-main {
+    padding: 10rem 14rem;
+    background-color: $color-bg;
+    position: relative;
+    .about-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: end;
+        .title {
+            h1 {
+                font-size: $font-size-giant;
+                font-weight: 600;
+                margin-bottom: 1rem;
+            }
+            h2 {
+                font-size: $font-size-xl;
+                line-height: 2rem;
+                font-weight: 400;
+                color: $color-text;
+            }
+        }
+        p {
+            max-width: 26rem;
+            font-size: $font-size-base;
+            line-height: 2rem;
+            font-weight: 400;
+            color: $color-text;
+        }
+    }
+    .about-body {
+        margin: 8rem 0; 
+        .warp-box{ 
+            margin-bottom: 8rem;
+            .inorganic {
+                --h: clamp(540px, 30vw, 630px);   // 高度（響應式）
+                --w: clamp(260px, 20vw, 260px);   // 寬度
+                --r: 90px;                        // 圓角
+                --overlap: 10px;                  // 重疊量（越大縫隙越小）
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 5rem 0;
+                .pill {
+                    width: var(--w);
+                    height: var(--h);
+                    border-radius: calc(var(--r) * 1.5);
+                    background-image: url('/avatar.png'); // 👈 用同一張圖
+                    background-size: cover;
+                    background-repeat: no-repeat;
+                    background-position: center; // 預設
+                    background-blend-mode: multiply; 
+                    &:nth-child(1) { 
+                        background-position: 0% 20%; 
+                        filter: brightness(1.2);
+                    }
+                    &:nth-child(2) { 
+                        background-position: 20% 40%; 
+                        filter: brightness(1);
+                    }
+                    &:nth-child(3) { 
+                        background-position: 40% 60%; 
+                        filter: brightness(.9);
+                    }
+                    &:nth-child(4) { 
+                        background-position: 60% 80%; 
+                        filter: brightness(.8);
+                    }
+                    &:nth-child(5) { 
+                        background-position: 80% 100%; 
+                        filter: brightness(.7);
+                    }
+                    &:nth-child(6) { 
+                        background-position: 100% 50%; 
+                        filter: brightness(.6);
+                    }
+                }
+                .pill + .pill {
+                    margin-left: calc(-1 * var(--overlap));
+                }
+            }
+            p {
+                max-width: 27rem;
+                margin-left: auto;
+                font-size: $font-size-base;
+                line-height: 2rem;
+                font-weight: 400;
+                color: $color-text;
+            }
+        }
+        .position-section {
+            display: flex;
+            justify-content: space-between;
+            align-content: center;
+            gap: 10rem;  
+            margin-bottom: 8rem;
+            .position {
+                flex: 6;
+                .title {
+                    font-size: $font-size-xxl;
+                    font-weight: 500;
+                    margin-bottom: 1rem;
+                }
+                .description {
+                    font-size: $font-size-base;
+                    line-height: 2rem;
+                    font-weight: 400;
+                    color: $color-text;
+                    margin-bottom: 2rem;
+                }
+            }
+            .reward {
+                flex: 3;
+                .title {
+                    font-size: $font-size-xxl;
+                    font-weight: 500;
+                    margin-bottom: 1rem;
+                }
+                .description {
+                    font-size: $font-size-base;
+                    line-height: 2rem;
+                    font-weight: 400;
+                    color: $color-text;
+                    margin-bottom: 2rem;
+                }
+            }
+        }
+    }
+    .img-wrap {
+        position: absolute;
+        right: 14rem;
+        bottom: 0rem;
+        width: 420px;
+        height: 420px;
+        background-image: url('/desk.png');
+        background-size: cover;
+        background-repeat: no-repeat;
+        .img {
+            width: 100%;
+            height: 100%;
+        }
+    }
+}
