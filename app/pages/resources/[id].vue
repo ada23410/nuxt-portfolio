@@ -2,12 +2,12 @@
     <div v-if="pending" class="container"><p>Loading…</p></div>
     <div v-else-if="error" class="container"><p>Failed: {{ error.message }}</p></div>
 
-    <div class="container" v-else-if="post">
+    <div class="resources-detail-main" v-else-if="post">
         <div class="article-head">
-        <div class="title">
-            <h1>{{ post.title }}</h1>
-            <h2>{{ post.published_at }}</h2>
-        </div>
+          <div class="title">
+              <h1>{{ post.title }}</h1>
+              <h2>{{ post.published_at }}</h2>
+          </div>
         </div>
 
         <div class="article-body">
@@ -62,6 +62,7 @@
     <div v-else class="container"><p>Loading…</p></div>
 </template>
 
+<style src="@/assets/css/pages/resources-detail.scss" lang="scss"></style>
 <script setup>
 import { computed, watchEffect } from 'vue'
 
