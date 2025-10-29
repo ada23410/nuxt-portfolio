@@ -66,7 +66,6 @@ const itemTo = (it) => `${props.basePath}/${encodeURIComponent(String(it.id))}`
         max-width: 540px; 
         color: inherit; 
         text-decoration: none; 
-        padding: 5rem 0; 
         .img { 
             width: 100%; 
             aspect-ratio: 1 / 1; 
