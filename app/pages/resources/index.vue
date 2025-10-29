@@ -1,5 +1,5 @@
 <template>
-    <div class="container">
+    <div class="resources-main">
         <div class="resources-head">
         <div class="title">
             <h1>Recent Resources</h1>
@@ -31,6 +31,7 @@
     </div>
 </template>
 
+<style src="@/assets/css/pages/resources.scss" lang="scss"></style>
 <script setup>
 import { ref, computed, watch } from 'vue'
 import Card from '@/components/Card.vue'
@@ -84,45 +85,3 @@ const TAGS = computed(() => [
 ])
 
 </script>
-
-<style lang="scss" scoped>
-.container {
-    padding: 10rem 14rem;
-    background-color: $color-bg;
-    .resources-head {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        .title {
-            h1 {
-                font-size: $font-size-giant;
-                font-weight: 600;
-            }
-            .category {
-                margin-top: 2.5rem;
-                .chip {
-                    padding: .5rem 1rem;
-                    background-color: transparent;
-                    font-size: $font-size-base;
-                    font-weight: 400;
-                    color: $color-text-light;
-                    border: .5px solid $color-border;
-                    border-radius: 50px;
-                    margin-right: .5rem;
-                    cursor: pointer;
-                }
-            }
-        }
-        p {
-        max-width: 26rem;
-        font-size: $font-size-base;
-        line-height: 2rem;
-        font-weight: 400;
-        color: $color-text;
-        }
-    }
-    .resources-body {
-        margin: 8rem 0;
-    }
-}
-</style>
