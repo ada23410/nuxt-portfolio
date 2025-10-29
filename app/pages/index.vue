@@ -10,16 +10,18 @@
                 <p id="typed-line4"></p>
             </div>
             <div class="scroll">
-                <a href="#">
-                    <div class="description">SCROLL TO DISCOVER</div>
-                    <div class="arrow" aria-hidden="true">
-                        <i>↓</i><i>↓</i><i>↓</i>
-                    </div>
+                <a class="scroll-link" href="#next">
+                    <span class="description">SCROLL TO DISCOVER</span>
+                    <span class="arrow" aria-hidden="true">
+                    <svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+                    <svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+                    <svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+                    </span>
                 </a>
             </div>
         </div>
         <div class="kv-section" ref="projectSection">
-        <div class="section-title">Project</div>
+        <!-- <div class="section-title">Project</div> -->
         <div class="project-card">
             <NuxtLink
                     v-for="(project, index) in projects"
@@ -204,7 +206,7 @@ onMounted(() => {
                 height: auto;  
                 position: absolute;
                 bottom: 1rem;
-                right: -18rem;
+                right: -15rem;
                 transform: rotate(-15deg);
                 transform-origin: left bottom;"
                 alt="underline animation"
@@ -230,6 +232,20 @@ onMounted(() => {
                     showCursor: false,
                     onComplete: () => {
                         document.querySelector('#typed-line3').classList.add('underline-animate');
+                        document.querySelector('#typed-line3').insertAdjacentHTML(
+                            'beforeend',
+                            `<img 
+                                src="/hero_animate_2.gif" 
+                                class="underline-gif-2" style="width: 250px;
+                                height: auto;  
+                                position: absolute;
+                                bottom: -15rem;
+                                left: -15rem;
+                                transform: rotate(0deg);
+                                transform-origin: left bottom;"
+                                alt="underline animation"
+                            >`
+                        );
                         new Typed('#typed-line4', {
                             strings: ["從理解人開始，邁向解決問題的設計"],
                             typeSpeed: 60,
@@ -257,8 +273,8 @@ onBeforeUnmount(() => {
     .Hero-section {
         max-width: 50vw;
         margin: 0 auto;
+        text-align: center;
         #typed-line1 { 
-            text-align: center;
             color: $color-text;
             font-size: 6rem;
             font-weight: 500;  
@@ -268,7 +284,6 @@ onBeforeUnmount(() => {
             z-index: 1;
         }
         #typed-line2 { 
-            text-align:right;
             color: $color-text;
             font-size: 6rem; 
             font-weight: 500;  
@@ -289,7 +304,6 @@ onBeforeUnmount(() => {
         } 
         p  {
             margin: 1.5rem 0;
-            text-align: left;
             font-size: $font-size-base; 
             line-height: 1rem;
             font-weight: 400; 
@@ -312,69 +326,77 @@ onBeforeUnmount(() => {
             }
         }
         .scroll {
+            --gap: 0.5rem;
+            --dur: 0.35s;
+            --arrow-h: 1.2em;
+            --line-thick: 2px;
+            --arrow-color: $color-text;    
+            --arrow-color-hover: #66cc66;  
             text-align: center;
-            margin: 5rem 0 0 0;
-            --gap: .75rem;
-            --dur: .36s;
-            a {
+            margin: 8rem 0 0 0;
+            .scroll-link {
                 display: inline-flex;
+                flex-direction: column;        
                 align-items: center;
-                gap: var(--gap);
+                gap: .4rem;
                 text-decoration: none;
-                color: $color-text;
-
+                color: var(--arrow-color);
                 .description {
-                    font-size: $font-size-base;
-                    font-weight: 500;
-                    margin-right: .25rem;
-                    transition: transform var(--dur) ease;
-                }
-
-                .arrow {
                 font-size: $font-size-base;
+                font-weight: 500;
+                margin-right: .25rem;
+                transition: transform var(--dur) ease;
+                }
+                .arrow {
                 position: relative;
                 display: inline-grid;
                 grid-auto-flow: row;
-                grid-auto-columns: 1.2em;
+                grid-auto-rows: 1.2em;
                 overflow: hidden;
-                width: 1.2em;
-                transition: width var(--dur) ease;
-
-                i {
-                    display: inline-block;
-                    transform: translateY(-100%);
-                    opacity: 0;
-                    transition: transform var(--dur) ease, opacity var(--dur) ease;
-
-                    &:nth-child(1) {
-                    transform: translateX(0);
-                    opacity: 1;
-                    }
+                height: var(--arrow-h);
+                transition: height var(--dur) ease, color var(--dur) ease;
+                color: inherit;
+                &::before {
+                    content: "";
+                    position: absolute;
+                    top: -0.6rem;              // 由上方接到文字下面
+                    left: 0.5em;               // 視覺微調：置中三角
+                    width: var(--line-thick);
+                    height: 0.6rem;            // 尾巴長度
+                    background: currentColor;
+                    border-radius: 999px;
+                    transition: background-color var(--dur) ease;
                 }
                 }
+                .chev {
+                width: 1em;
+                height: 1em;
+                stroke: currentColor;
+                stroke-width: 2;
+                fill: none;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+                transform: translateY(-100%);     // 從上往下彈出
+                opacity: 0;
+                transition: transform 0.3s ease, opacity 0.3s ease;
 
-                &:hover,
-                &:focus-visible {
-                color: $color-text;
-
-                .description {
-                    transform: translateX(.2rem);
-                }
-
-                .arrow {
-                    width: 4em;
-
-                    i {
-                    transform: translateX(0);
-                    opacity: 1;
-
-                    &:nth-child(2) { transition-delay: .04s; }
-                    &:nth-child(3) { transition-delay: .08s; }
-                    }
-                }
+                &:nth-child(1) { transform: translateY(0); opacity: 1; }
                 }
             }
-        }
+            .scroll-link:hover {
+                color: var(--arrow-color-hover);
+
+                .description { transform: translateY(.2rem); }
+                .arrow { height: 4em; }
+
+                .chev {
+                transform: translateY(0);
+                opacity: 1;
+                &:nth-child(2) { transition-delay: 0.05s; }
+                &:nth-child(3) { transition-delay: 0.10s; }
+                }
+            }
+            }
     }
 
     .kv-section, .resources, .about {
@@ -413,6 +435,7 @@ onBeforeUnmount(() => {
                 align-items: center;
                 .square {
                     align-self: center;
+                    background-position: center;
                     width: 100%;
                     max-width: 387px;
                     aspect-ratio: 1/1;
@@ -422,6 +445,7 @@ onBeforeUnmount(() => {
 
                 .circle {
                     align-self: flex-end;
+                    background-position: center;
                     width: 100%;
                     max-width: 387px;
                     aspect-ratio: 1/1;
@@ -435,6 +459,7 @@ onBeforeUnmount(() => {
                     max-width: 387px;
                     aspect-ratio: 1/1;
                     background-color: $color-text-light;
+                    background-position: center;
                     -webkit-mask-image: url('/rounded-triangle.svg');
                     -webkit-mask-repeat: no-repeat;
                     -webkit-mask-size: contain;
