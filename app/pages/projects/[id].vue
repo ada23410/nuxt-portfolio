@@ -2,7 +2,7 @@
   <div v-if="pending" class="container"><p>Loading…</p></div>
   <div v-else-if="error" class="container"><p>Failed: {{ error.message }}</p></div>
 
-  <div class="container" v-else-if="post">
+  <div class="project-detail-main" v-else-if="post">
     <div class="article-head">
       <div class="title">
         <h1>{{ post.title }}</h1>
@@ -57,6 +57,7 @@
   <div v-else class="container"><p>Loading…</p></div>
 </template>
 
+<style src="@/assets/css/pages/project-detail.scss" lang="scss"></style>
 <script setup>
 import { computed, watchEffect } from 'vue'
 
@@ -139,94 +140,3 @@ watchEffect(() => {
   console.log('PROJECT nodes →', nodes.value)
 })
 </script>
-
-<style lang="scss" scoped>
-.container {
-  padding: 10rem 14rem;
-  background-color: $color-bg;
-
-  .article-head {
-    display: flex; justify-content: space-between; align-items: flex-start;
-    .title {
-      h1 { 
-        font-size: $font-size-display; 
-        line-height: 3rem;
-        font-weight: 600; 
-        color: $color-text;
-        margin-bottom: 1rem; 
-      }
-      h2 { 
-        font-size: $font-size-xl; 
-        font-weight: 400; 
-        color: $color-text-light; 
-      }
-    }
-  }
-
-  .article-body {
-    .img {
-      margin: 5rem 0; width: 100%; max-height: 540px; aspect-ratio: 1 / 1;
-      border-radius: 60px; background-color: $color-text-light;
-      background-size: cover; background-position: center;
-    }
-    .content {
-      display: flex; 
-      justify-content: space-between; 
-      align-items: flex-start; 
-      gap: 2rem;
-      .author {
-        flex: 1;
-        .name { 
-          font-size: $font-size-lg;
-          color: $color-text;
-          font-weight: 500; 
-        }
-        .tag { 
-          margin-top: 2rem;
-          font-size: $font-size-sm;
-          color: $color-text-light;
-          span { 
-            padding: .5rem 1rem;
-            border: .5px solid $color-border;
-            border-radius: 50px;
-            margin-right: .5rem; 
-          }
-        }
-      }
-
-      .contents {
-        flex: 3;
-        :deep(p) {
-          font-size: $font-size-base;
-          line-height: 2.5rem;
-          color: $color-text-light;
-          text-align: justify;
-          text-indent: 2em;
-          margin-bottom: 2rem;
-        }
-        :deep(h3) {
-          font-size: $font-size-xl;
-          line-height: 1.5rem;
-          color: $color-text;
-          margin-bottom: 1rem;
-        }
-
-        .subtitle { 
-          font-size: $font-size-xxl;
-          font-weight: 500;
-          margin-bottom: 1rem; 
-        }
-        .paragraph { 
-          font-size: $font-size-base;
-          font-weight: 300;
-          color: $color-text-light;
-          text-align: justify;
-          line-height: 1.5rem; 
-          margin-bottom: 2rem; 
-        }
-        .img { margin: 5rem 0; width: 100%; max-height: 540px; aspect-ratio: 1/1; border-radius: 60px; background-color: $color-text-light; }
-      }
-    }
-  }
-}
-</style>
