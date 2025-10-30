@@ -13,9 +13,9 @@
                 <a class="scroll-link" href="#next">
                     <span class="description">SCROLL TO DISCOVER</span>
                     <span class="arrow" aria-hidden="true">
-                    <svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
-                    <svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
-                    <svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+                        <svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+                        <svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+                        <svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
                     </span>
                 </a>
             </div>
@@ -89,180 +89,106 @@ import { computed, ref, onMounted, onBeforeUnmount } from 'vue'
 import Typed from 'typed.js'
 import Card from '@/components/Card.vue'
 
+
+/* ---------- Constants ---------- */
+const TYPE_SPEED = 60
+const START_DELAY_LINE1 = 500
+const START_DELAY_BETWEEN_LINES = 300
+const START_DELAY_LINE3 = 450
+const START_DELAY_LINE4 = 450
+
+/* ---------- Utilities ---------- */
+// 以 Promise 包住 Typed，讓流程用 await 寫起來更直覺
+function typeLine(el, text, { startDelay = 0 } = {}) {
+    return new Promise(resolve => {
+        const instance = new Typed(el, {
+        strings: [text],
+        typeSpeed: TYPE_SPEED,
+        backSpeed: 0,
+        startDelay,
+        showCursor: false,
+        onComplete: () => resolve(instance)
+        })
+    })
+}
+
+/* ---------- Data Fetching ---------- */
+// resources
+const { data: resourcesData } = await useFetch('/api/resources', {
+    query: { limit: 2 },
+    default: () => ({ items: [] })
+})
+const items = computed(() => resourcesData.value?.items ?? [])
+
+// projects
+const { data: projectsData } = await useFetch('/api/projects', {
+    query: { limit: 3 },
+    default: () => ({ items: [] })
+})
+const projects = computed(() => projectsData.value?.items ?? [])
+
+/* ---------- Helpers ---------- */
 function shapeClass(index) {
     if (index === 0) return 'square'
     if (index === 1) return 'circle'
     if (index === 2) return 'triangle'
     return ''
 }
-// get resources
-const { data: resourcesData } = await useFetch('/api/resources', {
-    query: { 
-        limit: 2 
-    },
-    default: () => ({ 
-        items: [] 
-    })
-})
 
-const items = computed(() => resourcesData.value?.items ?? [])
+/* ---------- Typed.js flow ---------- */
+const typedInstances = []
 
-// get projects
-const { data: projectsData } = await useFetch('/api/projects', {
-    query: { 
-        limit: 3 
-    },
-    default: () => ({ 
-        items: [] 
-    })
-})
+async function initTyping() {
+    // Line 1
+    const t1 = await typeLine('#typed-line1', 'Turning insights', { startDelay: START_DELAY_LINE1 })
+    document.querySelector('#typed-line1').classList.add('underline-animate')
+    document.querySelector('#typed-line1').insertAdjacentHTML(
+        'beforeend',
+        `<img 
+        src="/hero_animate.gif" 
+        class="underline-gif" style="width: 300px; height: auto; position: absolute;
+        bottom: 1rem; right: -15rem; transform: rotate(-15deg); transform-origin: left bottom;"
+        alt="underline animation"
+        >`
+    )
+    typedInstances.push(t1)
 
-// 取出 items，避免 null
-const projects = computed(() => projectsData.value?.items ?? [])
+    // Line 2
+    const t2 = await typeLine('#typed-line2', 'into stories', { startDelay: START_DELAY_BETWEEN_LINES })
+    const line2 = document.querySelector('#typed-line2')
+    line2.innerHTML = line2.innerHTML.replace('stories', '<span class="highlight-green" style="color: #66cc66;">stories</span>')
+    line2.classList.add('underline-animate')
+    typedInstances.push(t2)
 
-/** 啟用某個區塊內的視差 */
-function useParallaxSection(sectionEl, selector, strength = 220) {
-    if (!sectionEl || typeof window === 'undefined') return () => {}
+    // 等下劃線動畫結束再打第三行
+    await new Promise(res => line2.addEventListener('animationend', res, { once: true }))
 
-    const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches
-    const els = Array.from(sectionEl.querySelectorAll(selector))
-    const layers = els.map(el => ({
-        el,
-        speed: Number(el.dataset.speed || 0.2),
-        y: 0,
-        target: 0
-    }))
-    let ticking = false
+    // Line 3
+    const t3 = await typeLine('#typed-line3', 'that inspire change.', { startDelay: START_DELAY_LINE3 })
+    const line3 = document.querySelector('#typed-line3')
+    line3.classList.add('underline-animate')
+    line3.insertAdjacentHTML(
+        'beforeend',
+        `<img 
+        src="/hero_animate_2.gif" 
+        class="underline-gif-2" style="width: 250px; height: auto; position: absolute;
+        bottom: -15rem; left: -15rem; transform: rotate(0deg); transform-origin: left bottom;"
+        alt="underline animation"
+        >`
+    )
+    typedInstances.push(t3)
 
-    const getProgress = () => {
-        const r = sectionEl.getBoundingClientRect()
-        const vh = window.innerHeight || document.documentElement.clientHeight
-        const sectionCenter = r.top + r.height / 2
-        const viewportCenter = vh / 2
-        const dist = sectionCenter - viewportCenter
-        const maxDist = (vh + r.height) / 2
-        const p = dist / maxDist
-        return Math.max(-1, Math.min(1, p))
-    }
-
-    const update = () => {
-        const p = getProgress()
-        for (const s of layers) {
-        s.target = p * strength * s.speed
-        s.y += (s.target - s.y) * 0.12
-        s.el.style.transform = reduced ? '' : `translate3d(0, ${s.y.toFixed(2)}px, 0)`
-        }
-        ticking = false
-    }
-
-    const onScroll = () => {
-        if (ticking) return
-        ticking = true
-        requestAnimationFrame(update)
-    }
-
-    els.forEach(el => (el.style.willChange = 'transform'))
-    window.addEventListener('scroll', onScroll, { passive: true })
-    window.addEventListener('resize', onScroll)
-    update()
-
-    return () => {
-        window.removeEventListener('scroll', onScroll)
-        window.removeEventListener('resize', onScroll)
-    }
+    // Line 4（副標）
+    const t4 = await typeLine('#typed-line4', '從理解人開始，邁向解決問題的設計', { startDelay: START_DELAY_LINE4 })
+    typedInstances.push(t4)
 }
 
-/* refs */
-const projectSection = ref(null)
-const resourcesRef   = ref(null)
-const aboutRef       = ref(null)
-const cleanups = []
-
 onMounted(() => {
-    if (projectSection.value) {
-        cleanups.push(
-        useParallaxSection(projectSection.value, '.square, .circle, .triangle-svg', 220)
-        )
-    }
-    if (resourcesRef.value) {
-        cleanups.push(useParallaxSection(resourcesRef.value, '.resource-card', 220))
-    }
-    if (aboutRef.value) {
-        cleanups.push(useParallaxSection(aboutRef.value, '.inorganic', 220))
-    }
-    // 第一行
-    new Typed('#typed-line1', {
-    strings: ["Turning insights"],
-    typeSpeed: 60,
-    backSpeed: 0,
-    startDelay: 500,
-    showCursor: false,
-    onComplete: () => {
-        document.querySelector('#typed-line1').classList.add('underline-animate');
-        document.querySelector('#typed-line1').insertAdjacentHTML(
-            'beforeend',
-            `<img 
-                src="/hero_animate.gif" 
-                class="underline-gif" style="width: 300px;
-                height: auto;  
-                position: absolute;
-                bottom: 1rem;
-                right: -15rem;
-                transform: rotate(-15deg);
-                transform-origin: left bottom;"
-                alt="underline animation"
-            >`
-        );
-        new Typed('#typed-line2', {
-        strings: ["into stories"],
-        typeSpeed: 60,
-        startDelay: 300,
-        showCursor: false,
-        onComplete: () => {
-            const line2 = document.querySelector('#typed-line2');
-            line2.innerHTML = line2.innerHTML.replace(
-                'stories',
-                '<span class="highlight-green" style="color: #66cc66;">stories</span>'
-                );
-            line2.classList.add('underline-animate');
-            line2.addEventListener('animationend', () => {
-                new Typed('#typed-line3', {
-                    strings: ["that inspire change."],
-                    typeSpeed: 60,
-                    startDelay: 450,
-                    showCursor: false,
-                    onComplete: () => {
-                        document.querySelector('#typed-line3').classList.add('underline-animate');
-                        document.querySelector('#typed-line3').insertAdjacentHTML(
-                            'beforeend',
-                            `<img 
-                                src="/hero_animate_2.gif" 
-                                class="underline-gif-2" style="width: 250px;
-                                height: auto;  
-                                position: absolute;
-                                bottom: -15rem;
-                                left: -15rem;
-                                transform: rotate(0deg);
-                                transform-origin: left bottom;"
-                                alt="underline animation"
-                            >`
-                        );
-                        new Typed('#typed-line4', {
-                            strings: ["從理解人開始，邁向解決問題的設計"],
-                            typeSpeed: 60,
-                            startDelay: 450,
-                            showCursor: false,
-                        })
-                    }
-                });
-            }, { once: true });
-        }
-        });
-    }
-    })
+    initTyping()
 })
 
 onBeforeUnmount(() => {
-    cleanups.forEach(fn => fn())
+    // 只需要清掉 Typed 實例
+    typedInstances.forEach(inst => inst?.destroy?.())
 })
 </script>
