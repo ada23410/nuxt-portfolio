@@ -68,7 +68,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem 14rem;
+    padding: 1rem 18rem;
     background-color: $color-bg;
     .logo a {
         text-decoration: none;

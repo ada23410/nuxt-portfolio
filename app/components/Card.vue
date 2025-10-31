@@ -58,7 +58,8 @@ const itemTo = (it) => `${props.basePath}/${encodeURIComponent(String(it.id))}`
     grid-template-columns: repeat(2, 1fr); 
     justify-items: center; 
     align-items: center; 
-    gap: 5rem;
+    padding: 5rem 0;
+    gap: 2rem;
     .card-link { 
         display: block; 
         width: 100%; 

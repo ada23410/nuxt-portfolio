@@ -42,7 +42,7 @@
 
 <style lang="scss" scoped>
 .container {
-    padding: 10rem 14rem;
+    padding: 10rem 18rem;
     background-color: $color-bg;
     .contact-head {
         display: flex;

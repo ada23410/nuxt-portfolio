@@ -18,7 +18,7 @@
 <style lang="scss" scoped>
 
 .site-footer {
-  padding: 6rem 14rem;
+  padding: 6rem 18rem;
   min-height: 30vh;
   background-color: $color-bg-dark;
   display: flex;
@@ -28,23 +28,23 @@
     .call-to-action {
       font-size: $font-size-xxl;
       color: $color-text-white;
-      .contact-btn {
-        display: inline-block;
-        margin-top: 2rem;
-        padding: 1.5rem 3rem;
-        border-radius: 50px;
-        font-size: $font-size-lg;
-        background-color: $color-bg;
-        color: $color-text;
-        text-decoration: none;
-        border: 1px solid transparent;
-        transition: transform .15s ease, box-shadow .15s ease;
-        cursor: pointer;
-        .contact-btn:hover,
-        .contact-btn:focus-visible {
-          transform: translateY(-1px);
-          box-shadow: 0 6px 16px rgba(0,0,0,.12);
-        }
+    }
+    .contact-btn {
+      display: inline-block;
+      margin-top: 2rem;
+      padding: 1.5rem 3rem;
+      border-radius: 50px;
+      font-size: $font-size-lg;
+      background-color: $color-bg;
+      color: $color-text;
+      text-decoration: none;
+      border: 1px solid transparent;
+      transition: transform .15s ease, box-shadow .15s ease;
+      cursor: pointer;
+      &:hover,
+      &:focus-visible {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(0,0,0,.12);
       }
     }
   }
@@ -57,7 +57,7 @@
         margin-bottom: 1.5rem;
         a {
           text-decoration: none;
-          font-size: $font-size-xl;
+          font-size: $font-size-base;
           font-weight: 400;
           color: $color-text-white;
           &:hover {

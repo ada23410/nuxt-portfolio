@@ -71,7 +71,7 @@
                     </div>
                     <div class="card-body">
                         <div class="card-title">Research & Discovery</div>
-                        <div class="card-subtitle">協助品牌釐清「問題是什麼」與「使用者是誰」</div>
+                        <div class="card-subtitle">釐清問題與使用者實際需求</div>
                         <div class="card-content">
                             <ul>
                                 <li>品牌競品分析</li>
