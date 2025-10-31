@@ -87,47 +87,114 @@
                 height: var(--arrow-h);
                 transition: height var(--dur) ease, color var(--dur) ease;
                 color: inherit;
-                &::before {
-                    content: "";
-                    position: absolute;
-                    top: -0.6rem;              // 由上方接到文字下面
-                    left: 0.5em;               // 視覺微調：置中三角
-                    width: var(--line-thick);
-                    height: 0.6rem;            // 尾巴長度
-                    background: currentColor;
-                    border-radius: 999px;
-                    transition: background-color var(--dur) ease;
-                }
+                    &::before {
+                        content: "";
+                        position: absolute;
+                        top: -0.6rem;              // 由上方接到文字下面
+                        left: 0.5em;               // 視覺微調：置中三角
+                        width: var(--line-thick);
+                        height: 0.6rem;            // 尾巴長度
+                        background: currentColor;
+                        border-radius: 999px;
+                        transition: background-color var(--dur) ease;
+                    }
                 }
                 .chev {
-                width: 1em;
-                height: 1em;
-                stroke: currentColor;
-                stroke-width: 2;
-                fill: none;
-                stroke-linecap: round;
-                stroke-linejoin: round;
-                transform: translateY(-100%);     // 從上往下彈出
-                opacity: 0;
-                transition: transform 0.3s ease, opacity 0.3s ease;
+                    width: 1em;
+                    height: 1em;
+                    stroke: currentColor;
+                    stroke-width: 2;
+                    fill: none;
+                    stroke-linecap: round;
+                    stroke-linejoin: round;
+                    transform: translateY(-100%);     // 從上往下彈出
+                    opacity: 0;
+                    transition: transform 0.3s ease, opacity 0.3s ease;
 
-                &:nth-child(1) { transform: translateY(0); opacity: 1; }
+                    &:nth-child(1) { transform: translateY(0); opacity: 1; }
                 }
             }
             .scroll-link:hover {
-                color: var(--arrow-color-hover);
+                    color: var(--arrow-color-hover);
 
-                .description { transform: translateY(.2rem); }
-                .arrow { height: 4em; }
+                    .description { 
+                        transform: translateY(.2rem); 
+                    }
+                    .arrow { 
+                        height: 4em; 
+                    }
 
-                .chev {
-                transform: translateY(0);
-                opacity: 1;
-                &:nth-child(2) { transition-delay: 0.05s; }
-                &:nth-child(3) { transition-delay: 0.10s; }
+                    .chev {
+                        transform: translateY(0);
+                        opacity: 1;
+                        &:nth-child(2) { transition-delay: 0.05s; }
+                        &:nth-child(3) { transition-delay: 0.10s; }
+                    }
+                }
+        }
+    }
+    .services {
+        position: relative; 
+        margin-bottom: 8rem;
+        .services-title {
+            position: absolute; 
+            left: 50%; 
+            // top: 15%; 
+            transform: translateX(-50%);
+            font-size: $font-size-xxl; 
+            color: $color-text;
+            z-index: 0;
+        }
+        .services-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 3rem;
+            padding: 5rem 0;
+            .card {
+                width: 100%;
+                min-height: 460px;
+                padding: 2rem 3rem;
+                background-color: $color-bg;
+                border: 0px solid $color-border; 
+                border-radius: 60px;
+                .card-head {
+                    width: 230px;
+                    height: 230px;
+                    margin: 0 auto;
+                    overflow: hidden;
+                    img {
+                        width: 100%;
+                        height: 100%;
+                        object-fit: cover;
+                    }
+                }
+                .card-body {
+                    .card-title {
+                        text-align: center;
+                        font-size: $font-size-xl;
+                        margin-bottom: 1rem;
+                    }
+                    .card-subtitle {
+                        text-align: center;
+                        font-size: $font-size-base;
+                        margin-bottom: 2rem;
+                    }
+                    .card-content {
+                        max-width: 250px;
+                        margin: 0 auto;
+                        ul {
+                            list-style: square inside;
+                            li {
+                                font-size: $font-size-base;
+                                color: $color-text;
+                                line-height: 2rem;
+                            }
+                        }
+                    }
                 }
             }
-            }
+        }
     }
     .kv-section, .resources, .about {
         position: relative; 

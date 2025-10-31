@@ -20,65 +20,125 @@
                 </a>
             </div>
         </div>
-        <div class="kv-section" ref="projectSection">
-        <!-- <div class="section-title">Project</div> -->
-        <div class="project-card">
-            <NuxtLink
-                    v-for="(project, index) in projects"
-                    :key="project.id"
-                    :to="`/projects/${project.id}`"
-                    class="project-shape"
-                >
-                    <div
-                        :class="shapeClass(index)"
-                        :style="{ backgroundImage: `url(${project.cover || ''})` }"
+        <div class="kv-section">
+        <div class="section-title">Project</div>
+            <div class="project-card">
+                <NuxtLink
+                        v-for="(project, index) in projects"
+                        :key="project.id"
+                        :to="`/projects/${project.id}`"
+                        class="project-shape"
                     >
-                </div>
-            </NuxtLink>
-        </div>
-        <div class="look-more">
-            <NuxtLink to="/projects">
-                <div class="description">DISCOVER PROJECTS</div>
-                <div class="arrow" aria-hidden="true">
-                    <i>→</i><i>→</i><i>→</i>
-                </div>
-            </NuxtLink>
-        </div>
-        </div>
-
-        <div class="resources" ref="resourcesRef">
-        <div class="resources-title">Resources</div>
-        <div class="resource-card" data-speed="0.22">
-            <Card :items="items" base-path="/resources"/>
-        </div>
-
-        <div class="look-more">
-            <NuxtLink to="/resources">
-            <div class="description">DISCOVER RESOURCES</div>
-            <div class="arrow" aria-hidden="true">
-                <i>→</i><i>→</i><i>→</i>
+                        <div
+                            :class="shapeClass(index)"
+                            :style="{ backgroundImage: `url(${project.cover || ''})` }"
+                        >
+                    </div>
+                </NuxtLink>
             </div>
-            </NuxtLink>
+            <div class="look-more">
+                <NuxtLink to="/projects">
+                    <div class="description">DISCOVER PROJECTS</div>
+                    <div class="arrow" aria-hidden="true">
+                        <i>→</i><i>→</i><i>→</i>
+                    </div>
+                </NuxtLink>
+            </div>
         </div>
-        </div>
-        <div class="about" ref="aboutRef">
-            <div class="about-title">About</div>
-            <NuxtLink class="inorganic" data-speed="0.40">
-                <span class="pill"></span>
-                <span class="pill"></span>
-                <span class="pill"></span>
-                <span class="pill"></span>
-                <span class="pill"></span>
-                <span class="pill"></span>    
-            </NuxtLink>
-        <div class="look-more">
-            <NuxtLink to="/about">
-                <div class="description">DISCOVER ABOUT ME</div>
+
+        <div class="resources">
+            <div class="resources-title">Resources</div>
+            <div class="resource-card" data-speed="0.22">
+                <Card :items="items" base-path="/resources"/>
+            </div>
+
+            <div class="look-more">
+                <NuxtLink to="/resources">
+                <div class="description">DISCOVER RESOURCES</div>
                 <div class="arrow" aria-hidden="true">
                     <i>→</i><i>→</i><i>→</i>
                 </div>
-            </NuxtLink>
+                </NuxtLink>
+            </div>
         </div>
+
+        <div class="services">
+            <div class="services-title">Services</div>
+            <div class="services-card">
+                <div class="card">
+                    <div class="card-head">
+                        <img src="/hero_animate.gif" alt="">
+                    </div>
+                    <div class="card-body">
+                        <div class="card-title">Research & Discovery</div>
+                        <div class="card-subtitle">協助品牌釐清「問題是什麼」與「使用者是誰」</div>
+                        <div class="card-content">
+                            <ul>
+                                <li>品牌競品分析</li>
+                                <li>使用者旅程與痛點盤點</li>
+                                <li>問卷與訪談設計</li>
+                                <li>可用性測試規劃</li>
+                                <li>報告與洞察摘要</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-head">
+                        <img src="/animate_3.gif" alt="">
+                    </div>
+                    <div class="card-body">
+                        <div class="card-title">UX / UI Design Strategy</div>
+                        <div class="card-subtitle">把研究轉化為產品結構與互動邏輯</div>
+                        <div class="card-content">
+                            <ul>
+                                <li>使用者流程與 IA 規劃</li>
+                                <li>Wireframe / Prototype 製作</li>
+                                <li>設計系統與元件庫建立</li>
+                                <li>品牌視覺語彙設計</li>
+                                <li>前後端協作文件</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-head">
+                        <img src="/animate_4.gif" alt="">
+                    </div>
+                    <div class="card-body">
+                        <div class="card-title">Front-End Development</div>
+                        <div class="card-subtitle">讓設計落地兼顧互動與效能</div>
+                        <div class="card-content">
+                            <ul>
+                                <li>Vue / Nuxt 專案架構與前端開發</li>
+                                <li>響應式與互動畫面設計（RWD / Motion）</li>
+                                <li>前後端串接（API Integration）</li>
+                                <li>網站部署與最佳化</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="about">
+            <div class="about-title">About</div>
+                <NuxtLink class="inorganic" data-speed="0.40">
+                    <span class="pill"></span>
+                    <span class="pill"></span>
+                    <span class="pill"></span>
+                    <span class="pill"></span>
+                    <span class="pill"></span>
+                    <span class="pill"></span>    
+                </NuxtLink>
+            <div class="look-more">
+                <NuxtLink to="/about">
+                    <div class="description">DISCOVER ABOUT ME</div>
+                    <div class="arrow" aria-hidden="true">
+                        <i>→</i><i>→</i><i>→</i>
+                    </div>
+                </NuxtLink>
+            </div>
         </div>
     </div>
 </template>
