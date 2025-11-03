@@ -145,13 +145,13 @@
 
 <style src="@/assets/css/pages/home.scss" lang="scss"></style>
 <script setup>
-import { computed, ref, onMounted, onBeforeUnmount } from 'vue'
+import { computed, ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import Typed from 'typed.js'
 import Card from '@/components/Card.vue'
 
 
 /* ---------- Constants ---------- */
-const TYPE_SPEED = 60
+const TYPE_SPEED = 50
 const START_DELAY_LINE1 = 500
 const START_DELAY_BETWEEN_LINES = 300
 const START_DELAY_LINE3 = 450
@@ -243,8 +243,28 @@ async function initTyping() {
     typedInstances.push(t4)
 }
 
-onMounted(() => {
+onMounted(async() => {
     initTyping()
+    await nextTick()
+    const elements = document.querySelectorAll('.project-shape, .look-more')
+    console.log('Found elements:', elements) 
+
+    const onScroll = () => {
+        const triggerY = window.innerHeight * 0.70  
+        elements.forEach(el => {
+            const rect = el.getBoundingClientRect()
+            if (rect.top < triggerY) {
+                el.classList.add('visible')
+            }
+        })
+    }
+
+    onScroll() // 初始檢查（防止一開始就該出現的被漏掉）
+    window.addEventListener('scroll', onScroll, { passive: true })
+
+    onBeforeUnmount(() => {
+        window.removeEventListener('scroll', onScroll)
+    })
 })
 
 onBeforeUnmount(() => {
