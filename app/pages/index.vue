@@ -48,16 +48,16 @@
 
         <div class="resources">
             <div class="resources-title">Resources</div>
-            <div class="resource-card" data-speed="0.22">
-                <Card :items="items" base-path="/resources"/>
+            <div class="resource-card">
+                <Card :items="items" base-path="/resources" class="resource-shape"/>
             </div>
 
             <div class="look-more">
                 <NuxtLink to="/resources">
-                <div class="description">DISCOVER RESOURCES</div>
-                <div class="arrow" aria-hidden="true">
-                    <i>→</i><i>→</i><i>→</i>
-                </div>
+                    <div class="description">DISCOVER RESOURCES</div>
+                    <div class="arrow" aria-hidden="true">
+                        <i>→</i><i>→</i><i>→</i>
+                    </div>
                 </NuxtLink>
             </div>
         </div>
@@ -246,7 +246,7 @@ async function initTyping() {
 onMounted(async() => {
     initTyping()
     await nextTick()
-    const elements = document.querySelectorAll('.project-shape, .look-more')
+    const elements = document.querySelectorAll('.project-shape, .look-more, .resource-shape, .services-card, .inorganic')
     console.log('Found elements:', elements) 
 
     const onScroll = () => {

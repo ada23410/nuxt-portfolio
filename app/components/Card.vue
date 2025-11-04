@@ -60,6 +60,13 @@ const itemTo = (it) => `${props.basePath}/${encodeURIComponent(String(it.id))}`
     align-items: center; 
     padding: 5rem 0;
     gap: 2rem;
+    transform: translateY(80px);
+    opacity: 0;
+    transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.8s;
+    &.visible { 
+        transform: translateY(0); 
+        opacity: 1; 
+    }
     .card-link { 
         display: block; 
         width: 100%; 

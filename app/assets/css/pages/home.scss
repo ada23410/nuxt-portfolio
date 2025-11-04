@@ -1,8 +1,9 @@
 .home-main {
     padding: 10rem 18rem;
     background-color: $color-bg;
+    /* ========== Hero ========== */
     .Hero-section {
-        max-width: 50vw;
+        max-width: min(50vw, 1200px);
         margin: 0 auto;
         text-align: center;
         #typed-line1 { 
@@ -24,7 +25,6 @@
             z-index: 1;
         }
         #typed-line3 {
-            text-align: left;
             color: $color-text;
             font-size: 6rem; 
             font-weight: 500;  
@@ -35,10 +35,12 @@
         } 
         p  {
             margin: 1.5rem 0;
-            font-size: $font-size-base; 
-            line-height: 1rem;
-            font-weight: 400; 
-            color: $color-text; 
+            font-size: $font-size-base;
+            line-height: 1.6; /* 原本 1rem 會太擠，調高更易讀 */
+            font-weight: 400;
+            color: $color-text;
+            max-width: 70ch;
+            margin-inline: auto;
         }
         .underline-animate::after {
                 content: '';
@@ -56,90 +58,88 @@
                 width: 100%;
             }
         }
+        /* Scroll CTA */
         .scroll {
-            --gap: 0.5rem;
-            --dur: 0.35s;
-            --arrow-h: 1.2em;
-            --line-thick: 2px;
-            --arrow-color: $color-text;    
-            --arrow-color-hover: #66cc66;  
-            text-align: center;
-            margin: 8rem 0 0 0;
-            .scroll-link {
-                display: inline-flex;
-                flex-direction: column;        
-                align-items: center;
-                gap: .4rem;
-                text-decoration: none;
-                color: var(--arrow-color);
-                .description {
+        --gap: 0.5rem;
+        --dur: 0.35s;
+        --arrow-h: 1.2em;
+        --line-thick: 2px;
+        --arrow-color: #{$color-text};
+        --arrow-color-hover: #66cc66;
+
+        text-align: center;
+        margin-top: 8rem;
+
+        .scroll-link {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            gap: .4rem;
+            text-decoration: none;
+            color: var(--arrow-color);
+
+            .description {
                 font-size: $font-size-base;
                 font-weight: 500;
                 margin-right: .25rem;
                 transition: transform var(--dur) ease;
-                }
-                .arrow {
-                position: relative;
-                display: inline-grid;
-                grid-auto-flow: row;
-                grid-auto-rows: 1.2em;
-                overflow: hidden;
-                height: var(--arrow-h);
-                transition: height var(--dur) ease, color var(--dur) ease;
-                color: inherit;
-                    &::before {
-                        content: "";
-                        position: absolute;
-                        top: -0.6rem;              // 由上方接到文字下面
-                        left: 0.5em;               // 視覺微調：置中三角
-                        width: var(--line-thick);
-                        height: 0.6rem;            // 尾巴長度
-                        background: currentColor;
-                        border-radius: 999px;
-                        transition: background-color var(--dur) ease;
-                    }
-                }
-                .chev {
-                    width: 1em;
-                    height: 1em;
-                    stroke: currentColor;
-                    stroke-width: 2;
-                    fill: none;
-                    stroke-linecap: round;
-                    stroke-linejoin: round;
-                    transform: translateY(-100%);     // 從上往下彈出
-                    opacity: 0;
-                    transition: transform 0.3s ease, opacity 0.3s ease;
+            }
 
-                    &:nth-child(1) { transform: translateY(0); opacity: 1; }
+            .arrow {
+            position: relative;
+            display: inline-grid;
+            grid-auto-flow: row;
+            grid-auto-rows: 1.2em;
+            overflow: hidden;
+            height: var(--arrow-h);
+            transition: height var(--dur) ease, color var(--dur) ease;
+            color: inherit;
+
+            &::before {
+                content: "";
+                position: absolute;
+                top: -0.6rem;
+                left: 0.5em;
+                width: var(--line-thick);
+                height: 0.6rem;
+                background: currentColor;
+                border-radius: 999px;
+                transition: background-color var(--dur) ease;
+            }
+        }
+
+            .chev {
+                width: 1em; height: 1em;
+                stroke: currentColor; stroke-width: 2; fill: none;
+                stroke-linecap: round; stroke-linejoin: round;
+                transform: translateY(-100%);
+                opacity: 0;
+                transition: transform 0.3s ease, opacity 0.3s ease;
+
+                &:nth-child(1) { transform: translateY(0); opacity: 1; }
+                }
+
+                &:hover {
+                color: var(--arrow-color-hover);
+                .description { transform: translateY(.2rem); }
+                .arrow { height: 4em; }
+                .chev {
+                    transform: translateY(0); opacity: 1;
+                    &:nth-child(2) { transition-delay: 0.05s; }
+                    &:nth-child(3) { transition-delay: 0.10s; }
+                }
                 }
             }
-            .scroll-link:hover {
-                    color: var(--arrow-color-hover);
-
-                    .description { 
-                        transform: translateY(.2rem); 
-                    }
-                    .arrow { 
-                        height: 4em; 
-                    }
-
-                    .chev {
-                        transform: translateY(0);
-                        opacity: 1;
-                        &:nth-child(2) { transition-delay: 0.05s; }
-                        &:nth-child(3) { transition-delay: 0.10s; }
-                    }
-                }
         }
     }
+     /* ========== Services ========== */
     .services {
         position: relative; 
         margin-bottom: 8rem;
         .services-title {
             position: absolute; 
             left: 50%; 
-            // top: 15%; 
+            top: 0; 
             transform: translateX(-50%);
             font-size: $font-size-xxl; 
             color: $color-text;
@@ -151,6 +151,13 @@
             align-items: center;
             gap: 2rem;
             padding: 5rem 0;
+            transform: translateY(80px);
+            opacity: 0;
+            transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.8s;
+            &.visible { 
+                transform: translateY(0); 
+                opacity: 1; 
+            }
             .card {
                 width: 100%;
                 min-height: 460px;
@@ -174,15 +181,18 @@
                     max-width: 250px;
                     margin: 0 auto;
                     .card-title {
+                        text-align: center;
                         font-size: $font-size-xl;
                         margin-bottom: 1rem;
                     }
                     .card-subtitle {
+                        text-align: center;
                         font-size: $font-size-base;
                         margin-bottom: 2rem;
                     }
                     .card-content {
                         ul {
+                            list-style: square;
                             li {
                                 font-size: $font-size-base;
                                 color: $color-text-light;
@@ -281,6 +291,13 @@
             align-items: center;
             justify-content: center;
             padding: 5rem 0;
+            transform: translateY(80px);
+            opacity: 0;
+            transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.8s;
+            &.visible { 
+                transform: translateY(0); 
+                opacity: 1; 
+            }
             .pill {
                 width: var(--w);
                 height: var(--h);

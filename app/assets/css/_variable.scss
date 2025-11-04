@@ -1,5 +1,5 @@
 // 顏色系統
-$color-primary: #42b883;   // 主色 (Vue 綠 / 強調用)
+$color-primary: #66cc66;   // 主色 (Vue 綠 / 強調用)
 $color-secondary: #35495e; // 輔色 (深藍灰 / 導覽或背景)
 $color-accent: #FE7743;    // 強調色 (按鈕 hover, highlight)
 
@@ -48,3 +48,57 @@ $breakpoint-sm: 576px;  // 手機
 $breakpoint-md: 768px;  // 平板
 $breakpoint-lg: 992px;  // 筆電
 $breakpoint-xl: 1440px; // 桌機大螢幕
+
+/* —— 統整成 maps —— */
+$colors: (
+    primary: $color-primary,
+    secondary: $color-secondary,
+    accent: $color-accent,
+    bg: $color-bg,
+    bg-dark: $color-bg-dark,
+    bg-alt: $color-bg-alt,
+    text: $color-text,
+    text-light: $color-text-light,
+    text-white: $color-text-white,
+    border: $color-border
+);
+
+$font-sizes: (
+    xs: $font-size-xs,
+    sm: $font-size-sm,
+    base: $font-size-base,
+    lg: $font-size-lg,
+    xl: $font-size-xl,
+    xxl: $font-size-xxl,
+    xxxl: $font-size-xxxl,
+    display: $font-size-display,
+    giant: $font-size-giant
+);
+
+$spacing: (
+    xs: $spacing-xs,
+    sm: $spacing-sm,
+    md: $spacing-md,
+    lg: $spacing-lg,
+    xl: $spacing-xl
+);
+
+$radii: (
+    sm: $border-radius-sm,
+    md: $border-radius-md,
+    lg: $border-radius-lg,
+    pill: 999px
+);
+
+$shadows: (
+    sm: $shadow-sm,
+    md: $shadow-md,
+    lg: $shadow-lg
+);
+
+$breakpoints: (
+    sm: $breakpoint-sm,
+    md: $breakpoint-md,
+    lg: $breakpoint-lg,
+    xl: $breakpoint-xl
+);
