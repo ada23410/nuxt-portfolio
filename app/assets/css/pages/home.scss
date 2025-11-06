@@ -4,6 +4,9 @@
     @media (max-width: $breakpoint-xl) {
         padding: 10rem 12rem;
     }
+    @media (max-width: $breakpoint-lg) {
+        padding: 10rem 6rem;
+    }
     /* ========== Hero ========== */
     .Hero-section {
         max-width: min(50vw, 1200px);
@@ -11,6 +14,9 @@
         text-align: center;
         @media (max-width: $breakpoint-xl) {
             max-width: 60vw;
+        }
+        @media (max-width: $breakpoint-lg) {
+            max-width: 100vw;
         }
         #typed-line1 { 
             color: $color-text;
@@ -20,6 +26,9 @@
             display: inline-block;
             position: relative;
             z-index: 1;
+            @media (max-width: $breakpoint-lg) {
+                font-size: 5rem;
+            }
         }
         #typed-line2 { 
             color: $color-text;
@@ -29,6 +38,9 @@
             display: inline-block;
             position: relative; 
             z-index: 1;
+            @media (max-width: $breakpoint-lg) {
+                font-size: 5rem;
+            }
         }
         #typed-line3 {
             color: $color-text;
@@ -38,6 +50,9 @@
             display: inline-block;
             position: relative; 
             z-index: 1; 
+            @media (max-width: $breakpoint-lg) {
+                font-size: 5rem;
+            }
         } 
         p  {
             margin: 1.5rem auto;
@@ -61,6 +76,36 @@
             @keyframes underlineGrow {
             to {
                 width: 100%;
+            }
+        }
+        .underline-gif {
+            width: 300px; 
+            height: auto; 
+            position: absolute;
+            bottom: 1rem; 
+            right: -15rem; 
+            transform: rotate(-15deg); 
+            transform-origin: left bottom;
+        }
+        .underline-gif-2 {
+            width: 250px; 
+            height: auto; 
+            position: absolute;
+            bottom: -15rem; 
+            left: -15rem; 
+            transform: rotate(0deg); 
+            transform-origin: left bottom;
+        }
+        @media (max-width: $breakpoint-lg) {
+            .underline-animate::after{
+                bottom: 1.2rem;
+            }
+            .underline-gif {
+                right: -15rem;
+            }
+            .underline-gif-2 {
+                bottom: -20rem;
+                left: -5rem
             }
         }
         /* Scroll CTA */
@@ -173,7 +218,9 @@
                     border-radius: 60px;
                     margin: 0 auto 2rem auto;
                     overflow: hidden;
-                    
+                    @media (max-width: $breakpoint-lg) {
+                        min-height: 245px;
+                    }
                     img {
                         width: 100%;
                         height: 100%;
