@@ -24,6 +24,9 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  @media (max-width: $breakpoint-xl) {
+      padding: 6rem 12rem;
+  }
   .contact {
     .call-to-action {
       font-size: $font-size-xxl;

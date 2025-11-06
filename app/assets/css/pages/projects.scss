@@ -1,6 +1,9 @@
 .projects-main { 
     padding: 10rem 18rem;
-    background: $color-bg; 
+    background: $color-bg;
+    @media (max-width: $breakpoint-xl) {
+        padding: 10rem 12rem;
+    } 
     .project-head {
         display: flex; 
         justify-content: space-between; 
