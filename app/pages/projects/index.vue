@@ -46,7 +46,7 @@
 
 <style src="@/assets/css/pages/projects.scss" lang="scss"></style>
 <script setup>
-import { computed, ref, watch } from "vue";
+import { computed, ref, watch, onMounted, onBeforeUnmount, nextTick } from "vue";
 import ProjectRow from "@/components/Row.vue";
 
 const route = useRoute();

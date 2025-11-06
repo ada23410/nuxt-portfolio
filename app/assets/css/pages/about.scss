@@ -2,6 +2,9 @@
     padding: 10rem 18rem;
     background-color: $color-bg;
     position: relative;
+    @media (max-width: $breakpoint-xl) {
+        padding: 10rem 12rem;
+    }
     .about-head {
         display: flex;
         justify-content: space-between;
@@ -85,6 +88,9 @@
                 line-height: 2rem;
                 font-weight: 400;
                 color: $color-text;
+                @media (max-width: $breakpoint-xl) {
+                    max-width: 20rem;
+                }
             }
         }
         .position-section {
@@ -93,6 +99,9 @@
             align-content: center;
             gap: 10rem;  
             margin-bottom: 8rem;
+            @media (max-width: $breakpoint-xl) {
+                gap: 5rem;  
+            }
             .position {
                 flex: 6;
                 .title {

@@ -1,22 +1,21 @@
 <template>
-    <footer class="site-footer">
-        <div class="contact">
-            <div class="call-to-action">Let’s talk about your needs and vision.</div>
-                <NuxtLink to="/contact" class="contact-btn">Contact</NuxtLink>
-            </div>
-        <nav class="menu" aria-label="Footer navigation">
-            <ul>
-                <li><NuxtLink to="/projects">PROJECT</NuxtLink></li>
-                <li><NuxtLink to="/resources">RESOURCES</NuxtLink></li>
-                <li><NuxtLink to="/about">ABOUT</NuxtLink></li>
-                <li><NuxtLink to="/contact">CONTACT</NuxtLink></li>
-            </ul>
-        </nav>
-    </footer>
+  <footer class="site-footer">
+    <div class="contact">
+      <div class="call-to-action">Let’s talk about your needs and vision.</div>
+      <NuxtLink to="/contact" class="contact-btn">Contact</NuxtLink>
+    </div>
+    <nav class="menu" aria-label="Footer navigation">
+      <ul>
+        <li><NuxtLink to="/projects">PROJECT</NuxtLink></li>
+        <li><NuxtLink to="/resources">RESOURCES</NuxtLink></li>
+        <li><NuxtLink to="/about">ABOUT</NuxtLink></li>
+        <li><NuxtLink to="/contact">CONTACT</NuxtLink></li>
+      </ul>
+    </nav>
+  </footer>
 </template>
 
 <style lang="scss" scoped>
-
 .site-footer {
   padding: 6rem 18rem;
   min-height: 30vh;
@@ -25,11 +24,11 @@
   justify-content: space-between;
   align-items: flex-start;
   @media (max-width: $breakpoint-xl) {
-      padding: 6rem 12rem;
+    padding: 6rem 12rem;
   }
   .contact {
     .call-to-action {
-      font-size: $font-size-xxl;
+      font-size: $font-size-xl;
       color: $color-text-white;
     }
     .contact-btn {
@@ -42,17 +41,17 @@
       color: $color-text;
       text-decoration: none;
       border: 1px solid transparent;
-      transition: transform .15s ease, box-shadow .15s ease;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
       cursor: pointer;
       &:hover,
       &:focus-visible {
         transform: translateY(-1px);
-        box-shadow: 0 6px 16px rgba(0,0,0,.12);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
       }
     }
   }
   .menu {
-    ul{
+    ul {
       list-style: none;
       padding: 0;
       margin: 0;
@@ -64,12 +63,12 @@
           font-weight: 400;
           color: $color-text-white;
           &:hover {
-            text-decoration: underline; 
+            text-decoration: underline;
           }
           &:focus-visible {
             text-decoration: underline;
           }
-        } 
+        }
       }
     }
   }
@@ -77,6 +76,10 @@
 
 /* RWD */
 @media (max-width: 1024px) {
-  .site-footer { padding: 4rem 2rem; flex-direction: column; gap: 2rem; }
+  .site-footer {
+    padding: 4rem 2rem;
+    flex-direction: column;
+    gap: 2rem;
+  }
 }
 </style>

@@ -152,7 +152,7 @@
         .services-card {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: start;
             gap: 2rem;
             padding: 5rem 0;
             transform: translateY(80px);
@@ -167,7 +167,7 @@
                 min-height: 460px;
                 .card-head {
                     width: 100%;
-                    min-height: 280px;
+                    min-height: 340px;
                     background-color: $color-bg-alt;
                     border: 0px solid $color-border; 
                     border-radius: 60px;
