@@ -4,15 +4,15 @@
         <div class="title">
             <h1>Recent Resources</h1>
             <div class="category">
-                <button
-                    v-for="t in TAGS"
-                    :key="t.label"
-                    class="chip"
-                    :class="{ active: (tag || '') === t.value }"
-                    @click="tag = t.value"
-                >
-                    {{ t.label }}
-                </button>
+            <button
+                v-for="t in TAGS"
+                :key="t.label"
+                class="chip"
+                :class="{ active: (tag || '') === t.value }"
+                @click="tag = t.value"
+            >
+                {{ t.label }}
+            </button>
             </div>
         </div>
         <div>
@@ -24,52 +24,43 @@
         </div>
 
         <div class="resources-body">
-            <div v-if="pending">Loading…</div>
-            <div v-else-if="error">Failed: {{ error.message }}</div>
-            <Card v-else :items="items" base-path="/resources" />
+        <div v-if="pending">Loading…</div>
+        <div v-else-if="error">Failed: {{ error.message }}</div>
+        <Card v-else :items="items" base-path="/resources" class="resource-shape" />
         </div>
     </div>
 </template>
 
 <style src="@/assets/css/pages/resources.scss" lang="scss"></style>
+
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import Card from '@/components/Card.vue'
 
 const route = useRoute()
 const router = useRouter()
 
-// --- 讀所有分類（去重）---
+/* ---------- 分類資料 ---------- */
 const { data: catRes } = await useFetch('/api/resources/categories', {
-    default: () => ({ categories: [] })
+  default: () => ({ categories: [] })
 })
 const categories = computed(() => {
-    const arr = catRes.value?.categories ?? []
-    // 去重 + 排序（依需要）
-    return [...new Set(arr)].sort()
+  const arr = catRes.value?.categories ?? []
+  return [...new Set(arr)].sort()
 })
 
-// --- 目前選中的 tag（與網址 ?tag= 同步）---
+/* ---------- Tag 同步 ---------- */
 const tag = ref(String(route.query.tag || ''))
-// 使用者點擊 chip
-const setTag = (v) => {
-    tag.value = v
-}
-// 當 tag 變動，更新網址（清空時移除參數）
 watch(tag, (v) => {
-    router.replace({ query: { ...route.query, tag: v || undefined } })
-    // 捲回頂端（可選）
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+  router.replace({ query: { ...route.query, tag: v || undefined } })
+  window.scrollTo({ top: 0, behavior: 'smooth' })
 })
-// 使用者用瀏覽器返回/前進時，同步 tag
 watch(
-    () => route.query.tag,
-    (q) => {
-        tag.value = String(q || '')
-    }
+  () => route.query.tag,
+  (q) => (tag.value = String(q || ''))
 )
 
-// --- 依 tag 抓列表 ---
+/* ---------- 列表資料 ---------- */
 const query = computed(() => ({ limit: 6, ...(tag.value ? { tag: tag.value } : {}) }))
 const { data: listRes, pending, error } = await useFetch('/api/resources', {
     query,
@@ -78,10 +69,33 @@ const { data: listRes, pending, error } = await useFetch('/api/resources', {
 })
 const items = computed(() => listRes.value?.items ?? [])
 
-// --- 組合 chips（All + 動態分類）---
+/* ---------- Chips ---------- */
 const TAGS = computed(() => [
     { label: 'All', value: '' },
     ...categories.value.map((n) => ({ label: n, value: n }))
 ])
 
+/* ---------- 最簡 scroll reveal ---------- */
+onMounted(async () => {
+    await nextTick()
+    const elements = document.querySelectorAll(
+        '.resource-shape'
+    )
+    console.log('Found elements:', elements)
+
+    const onScroll = () => {
+        const triggerY = window.innerHeight * 0.7
+        elements.forEach((el) => {
+        const rect = el.getBoundingClientRect()
+        if (rect.top < triggerY) el.classList.add('visible')
+        })
+    }
+
+    onScroll() // 一開始檢查一次
+    window.addEventListener('scroll', onScroll, { passive: true })
+
+    onBeforeUnmount(() => {
+        window.removeEventListener('scroll', onScroll)
+    })
+})
 </script>

@@ -14,8 +14,30 @@ export default defineEventHandler(async (event) => {
         { property: 'Status', select: { equals: 'Published' } },
         { property: 'Type',   select: { equals: 'Resource' } }
     ]
-    if (tag) and.push({ property: 'Category', multi_select: { contains: tag } })
+    if (tag) and.push({ 
+        property: 'Category', 
+        multi_select: 
+        { 
+            contains: tag 
+        } 
+    })
 
+    try {
+            const res = await notion.dataSources.query({
+            data_source_id: notionDataSourceId,
+            page_size: limit,
+            filter: { and },
+            sorts: [{ 
+                property: 'Date', 
+                direction: 'descending' 
+            }]
+        })
+
+        const items = res.results.map(mapPageToCard)
+        return { items }
+    }catch(error:any){
+
+    }
     const res = await notion.dataSources.query({
         data_source_id: notionDataSourceId,
         page_size: limit,

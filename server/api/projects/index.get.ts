@@ -22,11 +22,11 @@ export default defineEventHandler(async (event) => {
 
     try {
         const res = await notion.dataSources.query({
-        data_source_id: notionDataSourceId,
-        page_size: limit,
-        start_cursor,
-        filter: { and },
-        sorts: [{ property: 'Date', direction: 'descending' }],
+            data_source_id: notionDataSourceId,
+            page_size: limit,
+            start_cursor,
+            filter: { and },
+            sorts: [{ property: 'Date', direction: 'descending' }],
         })
 
         const items = res.results.map(mapPageToCard)
