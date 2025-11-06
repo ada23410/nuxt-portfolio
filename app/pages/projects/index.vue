@@ -16,7 +16,9 @@
         </div>
       </div>
       <div>
-        <p>專注於體驗細節與效能品質，將設計與開發融入可靠的數位服務，讓每一次互動都兼具人性的溫度與科技的精準。</p>
+        <p>
+          專注於體驗細節與效能品質，將設計與開發融入可靠的數位服務，讓每一次互動都兼具人性的溫度與科技的精準。
+        </p>
       </div>
     </div>
 
@@ -26,13 +28,7 @@
 
     <!-- 列表 -->
     <!-- 列表 -->
-    <TransitionGroup
-      v-else
-      name="stack"
-      tag="div"
-      class="project-body"
-      appear
-    >
+    <TransitionGroup v-else name="stack" tag="div" class="project-body" appear>
       <div
         v-for="(it, idx) in items"
         :key="it.id"
@@ -50,48 +46,69 @@
 
 <style src="@/assets/css/pages/projects.scss" lang="scss"></style>
 <script setup>
-import { computed, ref, watch } from 'vue'
-import ProjectRow from '@/components/Row.vue'
+import { computed, ref, watch } from "vue";
+import ProjectRow from "@/components/Row.vue";
 
-const route = useRoute()
-const router = useRouter()
+const route = useRoute();
+const router = useRouter();
 
 // 1) 讀取分類（失敗時退回靜態預設）
-const { data: catRes } = await useFetch('/api/projects/categories', {
-  default: () => ({ categories: [] })
-})
+const { data: catRes } = await useFetch("/api/projects/categories", {
+  default: () => ({ categories: [] }),
+});
 const categories = computed(() =>
-  (catRes.value?.categories?.length
+  catRes.value?.categories?.length
     ? catRes.value.categories
-    : ['Branding', 'Graphic', 'Website', 'Illustration'])
-)
+    : ["Branding", "Graphic", "Website", "Illustration"]
+);
 const TAGS = computed(() => [
-  { label: 'All', value: '' },
-  ...categories.value.map(n => ({ label: n, value: n }))
-])
+  { label: "All", value: "" },
+  ...categories.value.map((n) => ({ label: n, value: n })),
+]);
 
 // 2) tag 與網址同步
-const tag = ref(typeof route.query.tag === 'string' ? route.query.tag : '')
-watch(tag, v => router.replace({ query: { ...route.query, tag: v || undefined } }))
+const tag = ref(typeof route.query.tag === "string" ? route.query.tag : "");
+watch(tag, (v) => router.replace({ query: { ...route.query, tag: v || undefined } }));
 
 // 3) 依 tag 取列表
-const query = computed(() => ({ limit: 6, ...(tag.value ? { tag: tag.value } : {}) }))
-const { data: listRes, pending, error } = await useFetch('/api/projects', {
+const query = computed(() => ({ limit: 6, ...(tag.value ? { tag: tag.value } : {}) }));
+const { data: listRes, pending, error } = await useFetch("/api/projects", {
   query,
-  key: () => `projects:${tag.value || 'all'}`,
-  default: () => ({ items: [] })
-})
-const items = computed(() => listRes.value?.items ?? [])
+  key: () => `projects:${tag.value || "all"}`,
+  default: () => ({ items: [] }),
+});
+const items = computed(() => listRes.value?.items ?? []);
 
 // 4) 兩兩一組 → 給 Row.vue：{ main, side }
 const rows = computed(() => {
-  const out = []
+  const out = [];
   for (let i = 0; i < items.value.length; i += 2) {
-    out.push({ main: items.value[i], side: items.value[i + 1] ?? null })
+    out.push({ main: items.value[i], side: items.value[i + 1] ?? null });
   }
-  return out
-})
+  return out;
+});
 
 // 5) 點選分類
-const selectTag = (v) => (tag.value = v)
+const selectTag = (v) => (tag.value = v);
+
+onMounted(async () => {
+  await nextTick();
+  const elements = document.querySelectorAll(".project-body");
+  console.log("Found elements:", elements);
+
+  const onScroll = () => {
+    const triggerY = window.innerHeight * 0.7;
+    elements.forEach((el) => {
+      const rect = el.getBoundingClientRect();
+      if (rect.top < triggerY) el.classList.add("visible");
+    });
+  };
+
+  onScroll(); // 一開始檢查一次
+  window.addEventListener("scroll", onScroll, { passive: true });
+
+  onBeforeUnmount(() => {
+    window.removeEventListener("scroll", onScroll);
+  });
+});
 </script>
