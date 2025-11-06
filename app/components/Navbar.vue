@@ -70,10 +70,15 @@
     align-items: center;
     padding: 1rem 18rem;
     background-color: $color-bg;
-    .logo a {
-        text-decoration: none;
-        font-size: $font-size-xl;
-        color: $color-text;
+    @media (max-width: $breakpoint-xl) {
+        padding: 1rem 12rem;
+    }
+    .logo{
+        a{
+            text-decoration: none;
+            font-size: $font-size-xl;
+            color: $color-text;
+        }
     }
     .menu {
         perspective: 800px;
