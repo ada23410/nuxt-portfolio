@@ -1,6 +1,8 @@
 <template>
   <div v-if="pending" class="container"><p>Loading…</p></div>
-  <div v-else-if="error" class="container"><p>Failed: {{ error.message }}</p></div>
+  <div v-else-if="error" class="container">
+    <p>Failed: {{ error.message }}</p>
+  </div>
 
   <div class="project-detail-main" v-else-if="post">
     <div class="article-head">
@@ -12,12 +14,15 @@
 
     <div class="article-body">
       <!-- 有 cover 再套背景，避免 url(undefined) -->
-      <div class="img" :style="post.cover ? { backgroundImage: `url(${post.cover})` } : {}"></div>
+      <div
+        class="img"
+        :style="post.cover ? { backgroundImage: `url(${post.cover})` } : {}"
+      ></div>
       <div class="content">
         <div class="author">
           <div class="name">
             <span>&ensp;Author / </span>
-            <span>{{ post.author || 'Aida Wu' }}</span>
+            <span>{{ post.author || "Aida Wu" }}</span>
           </div>
           <div class="tag" v-if="post.tags?.length">
             <span v-for="t in post.tags" :key="t">{{ t }}</span>
@@ -28,26 +33,49 @@
           <!-- blocks -> nodes 渲染 -->
           <template v-if="nodes.length">
             <template v-for="(n, i) in nodes" :key="i">
-              <p v-if="n.type === 'p'">{{ n.text }}</p>
-              <h1 v-else-if="n.type === 'h1'">{{ n.text }}</h1>
-              <h2 v-else-if="n.type === 'h2'">{{ n.text }}</h2>
-              <h3 v-else-if="n.type === 'h3'">{{ n.text }}</h3>
-              <blockquote v-else-if="n.type === 'quote'">{{ n.text }}</blockquote>
-              <ul v-else-if="n.type === 'ul'">
-                <li v-for="(li, j) in n.children" :key="j">{{ li.text }}</li>
+              <p v-if="n.type === 'p'" class="paragraph">
+                {{ n.text }}
+              </p>
+
+              <h1 v-else-if="n.type === 'h1'" class="paragraph">
+                {{ n.text }}
+              </h1>
+
+              <h2 v-else-if="n.type === 'h2'" class="paragraph">
+                {{ n.text }}
+              </h2>
+
+              <h3 v-else-if="n.type === 'h3'" class="paragraph">
+                {{ n.text }}
+              </h3>
+
+              <blockquote v-else-if="n.type === 'quote'" class="paragraph">
+                {{ n.text }}
+              </blockquote>
+
+              <ul v-else-if="n.type === 'ul'" class="paragraph">
+                <li v-for="(li, j) in n.children" :key="j">
+                  {{ li.text }}
+                </li>
               </ul>
+
               <hr v-else-if="n.type === 'divider'" />
+
               <figure v-else-if="n.type === 'img'" class="img-wrap">
                 <img :src="n.src" :alt="n.caption || ''" />
-                <figcaption v-if="n.caption">{{ n.caption }}</figcaption>
+                <figcaption v-if="n.caption">
+                  {{ n.caption }}
+                </figcaption>
               </figure>
             </template>
           </template>
 
           <!-- 沒 nodes：用描述切段 -->
-          <div v-else>
-            <p v-for="(p, i) in paragraphs" :key="i" class="paragraph">{{ p }}</p>
-          </div>
+          <template v-else>
+            <p v-for="(p, i) in paragraphs" :key="i" class="paragraph">
+              {{ p }}
+            </p>
+          </template>
         </div>
       </div>
     </div>
@@ -59,84 +87,158 @@
 
 <style src="@/assets/css/pages/project-detail.scss" lang="scss"></style>
 <script setup>
-import { computed, watchEffect } from 'vue'
+import { computed, watchEffect } from "vue";
+import { useRoute } from "vue-router";
 
-const route = useRoute()
-const id = computed(() => String(route.params.id))
+/* --------------------------------------------------
+ * Route / API
+ * -------------------------------------------------- */
+const route = useRoute();
+const id = computed(() => String(route.params.id));
 
-// 這裡改成 projects API
-const { data, pending, error } = await useFetch(
-  () => `/api/projects/${id.value}`,
-  { key: () => `project:${id.value}`, default: () => ({ post: null, blocks: [], nodes: [] }) }
-)
+const { data } = await useFetch(() => `/api/projects/${id.value}`, {
+  key: () => `project:${id.value}`,
+  default: () => ({
+    post: null,
+    blocks: [],
+    nodes: [],
+  }),
+});
 
-/* Notion rich_text[] -> 文字 */
-const rtText = (rt) => (rt ?? []).map(t => t?.plain_text ?? '').join('')
+/* --------------------------------------------------
+ * Utils
+ * -------------------------------------------------- */
 
-/* blocks -> nodes（支援你的簡化格式與原生 Notion block） */
-function toNodes(input) {
-  const out = []
-  let ulBuf = null
-  const flushUl = () => { if (ulBuf?.length) out.push({ type: 'ul', children: ulBuf }); ulBuf = null }
+/* Notion rich_text[] → 純文字 */
+const richTextToString = (richText = []) =>
+  richText.map((t) => t?.plain_text ?? "").join("");
 
-  for (const b of (input ?? [])) {
-    // 你的簡化格式 { id, type, ... }
-    if (b && typeof b === 'object' && 'type' in b && !('paragraph' in b)) {
-      switch (b.type) {
-        case 'p':       flushUl(); if (b.text) out.push({ type: 'p', text: b.text }); break
-        case 'h1':      flushUl(); if (b.text) out.push({ type: 'h1', text: b.text }); break
-        case 'h2':      flushUl(); if (b.text) out.push({ type: 'h2', text: b.text }); break
-        case 'h3':      flushUl(); if (b.text) out.push({ type: 'h3', text: b.text }); break
-        case 'quote':   flushUl(); if (b.text) out.push({ type: 'quote', text: b.text }); break
-        case 'divider': flushUl(); out.push({ type: 'divider' }); break
-        case 'img':     flushUl(); if (b.src) out.push({ type: 'img', src: b.src, caption: b.caption }); break
-        case 'li':
-          if (b.text) { if (!ulBuf) ulBuf = []; ulBuf.push({ type: 'li', text: b.text }) }
-          break
-        default: flushUl()
+/* blocks → 統一 nodes 格式 */
+function normalizeBlocksToNodes(blocks = []) {
+  const nodes = [];
+  let listBuffer = null;
+
+  const flushList = () => {
+    if (listBuffer?.length) {
+      nodes.push({ type: "ul", children: listBuffer });
+      listBuffer = null;
+    }
+  };
+
+  for (const block of blocks) {
+    // ---- 自訂簡化格式 ----
+    if (block?.type && !block.paragraph) {
+      flushList();
+      if (block.text) {
+        nodes.push({ type: block.type, text: block.text });
       }
-      continue
+      continue;
     }
 
-    // 原生 Notion block
-    const t = b?.type
-    switch (t) {
-      case 'paragraph':       flushUl(); { const text = rtText(b.paragraph?.rich_text); if (text) out.push({ type: 'p', text }) } break
-      case 'heading_1':
-      case 'heading_2':
-      case 'heading_3':       flushUl(); { const text = rtText(b[t]?.rich_text); if (text) out.push({ type: t === 'heading_1' ? 'h1' : t === 'heading_2' ? 'h2' : 'h3', text }) } break
-      case 'quote':           flushUl(); { const text = rtText(b.quote?.rich_text); if (text) out.push({ type: 'quote', text }) } break
-      case 'bulleted_list_item': { const text = rtText(b.bulleted_list_item?.rich_text); if (text) { if (!ulBuf) ulBuf = []; ulBuf.push({ type: 'li', text }) } } break
-      case 'divider':         flushUl(); out.push({ type: 'divider' }); break
-      case 'image':           flushUl(); { const src = b.image?.file?.url || b.image?.external?.url; const caption = rtText(b.image?.caption); if (src) out.push({ type: 'img', src, caption }) } break
-      default:                flushUl()
+    // ---- 原生 Notion block ----
+    switch (block?.type) {
+      case "paragraph": {
+        flushList();
+        const text = richTextToString(block.paragraph?.rich_text);
+        if (text) nodes.push({ type: "p", text });
+        break;
+      }
+
+      case "heading_1":
+      case "heading_2":
+      case "heading_3": {
+        flushList();
+        const text = richTextToString(block[block.type]?.rich_text);
+        if (text) {
+          nodes.push({
+            type: block.type.replace("heading_", "h"),
+            text,
+          });
+        }
+        break;
+      }
+
+      case "quote": {
+        flushList();
+        const text = richTextToString(block.quote?.rich_text);
+        if (text) nodes.push({ type: "quote", text });
+        break;
+      }
+
+      case "bulleted_list_item": {
+        const text = richTextToString(block.bulleted_list_item?.rich_text);
+        if (text) {
+          if (!listBuffer) listBuffer = [];
+          listBuffer.push({ type: "li", text });
+        }
+        break;
+      }
+
+      case "divider":
+        flushList();
+        nodes.push({ type: "divider" });
+        break;
+
+      case "image": {
+        flushList();
+        const src = block.image?.file?.url || block.image?.external?.url;
+        const caption = richTextToString(block.image?.caption);
+        if (src) nodes.push({ type: "img", src, caption });
+        break;
+      }
+
+      default:
+        flushList();
     }
   }
-  flushUl()
-  return out
+
+  flushList();
+  return nodes;
 }
 
-/* 直接用 API 回傳的 post */
-const post = computed(() => data.value?.post ?? null)
+/* --------------------------------------------------
+ * Data sources
+ * -------------------------------------------------- */
 
-/* 有 nodes 就用 nodes；否則把 blocks 轉成 nodes */
-const nodes = computed(() => {
-  const given = data.value?.nodes
-  if (given?.length) return given
-  const blocks = data.value?.blocks ?? []
-  return toNodes(blocks)
-})
+const post = computed(() => data.value?.post ?? null);
+const apiNodes = computed(() => data.value?.nodes ?? []);
+const apiBlocks = computed(() => data.value?.blocks ?? []);
 
-/* 沒有 nodes 時，用 description 當後備段落 */
-const paragraphs = computed(() => {
-  if (nodes.value.length) return []
-  const desc = post.value?.description ?? ''
-  return desc.split(/\n{2,}/).map(s => s.trim()).filter(Boolean)
-})
+/* 單一內容來源（安全、永遠是陣列） */
+const contentNodes = computed(() => {
+  if (Array.isArray(apiNodes.value) && apiNodes.value.length) {
+    return apiNodes.value;
+  }
+  if (Array.isArray(apiBlocks.value) && apiBlocks.value.length) {
+    return normalizeBlocksToNodes(apiBlocks.value);
+  }
+  return [];
+});
 
-/* 除錯觀察（上線可移除） */
+/* ⭐ 關鍵：提供 template 使用的 nodes（alias） */
+const nodes = computed(() => contentNodes.value);
+
+/* description fallback（只在沒 nodes 時用） */
+const descriptionParagraphs = computed(() => {
+  const desc = post.value?.description ?? "";
+  return desc
+    .split(/\n{2,}/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+});
+
+/* 顯示模式（讓 template 一眼看懂） */
+const renderMode = computed(() => {
+  if (nodes.value.length) return "nodes";
+  if (descriptionParagraphs.value.length) return "description";
+  return "empty";
+});
+
+/* --------------------------------------------------
+ * Debug（可移除）
+ * -------------------------------------------------- */
 watchEffect(() => {
-  console.log('PROJECT post →', post.value)
-  console.log('PROJECT nodes →', nodes.value)
-})
+  console.log("renderMode →", renderMode.value);
+  console.log("nodes →", nodes.value);
+});
 </script>

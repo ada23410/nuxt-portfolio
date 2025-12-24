@@ -128,29 +128,28 @@ const to = (it: any) =>
     }
     .card-body {
       margin-top: 1.5rem;
-    }
-    .title {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      margin-bottom: 1rem;
-      .text {
-        font-size: $font-size-xl;
-        font-weight: 500;
-        color: $color-text;
+      .title {
+        margin-bottom: 1rem;
+        .text {
+          font-size: $font-size-xl;
+          font-weight: 500;
+          line-height: 2rem;
+          color: $color-text;
+          margin-bottom: 0.2rem;
+        }
+        .time {
+          font-size: $font-size-base;
+          color: $color-text-light;
+        }
       }
-      .time {
-        font-size: $font-size-lg;
-        color: $color-text-light;
-      }
-    }
-    .description {
-      p {
-        font-size: $font-size-base;
-        font-weight: 300;
-        color: $color-text-light;
-        text-align: justify;
-        line-height: 1.5rem;
+      .description {
+        p {
+          font-size: $font-size-base;
+          font-weight: 300;
+          color: $color-text-light;
+          text-align: justify;
+          line-height: 1.5rem;
+        }
       }
     }
     .tag-list {
