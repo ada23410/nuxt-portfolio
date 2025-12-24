@@ -1,283 +1,261 @@
 <template>
-    <div v-if="pending" class="container"><p>Loading…</p></div>
-    <div v-else-if="error" class="container"><p>Failed: {{ error.message }}</p></div>
+  <div v-if="pending" class="container"><p>Loading…</p></div>
+  <div v-else-if="error" class="container">
+    <p>Failed: {{ error.message }}</p>
+  </div>
 
-    <div class="resources-detail-main" v-else-if="post">
-        <div class="article-head">
-          <div class="title">
-              <h1>{{ post.title }}</h1>
-              <h2>{{ post.published_at }}</h2>
+  <div class="resources-detail-main" v-else-if="post">
+    <div class="article-head">
+      <div class="title">
+        <h1>{{ post.title }}</h1>
+        <h2>{{ post.published_at }}</h2>
+      </div>
+    </div>
+
+    <div class="article-body">
+      <!-- 建議不用自閉合，寫成成對標籤更直觀 -->
+      <div
+        class="img"
+        :style="post.cover ? { backgroundImage: `url(${post.cover})` } : {}"
+      ></div>
+
+      <div class="content">
+        <div class="author">
+          <div class="name">
+            <span>&ensp;Author / </span>
+            <span>{{ post.author || "Aida Wu" }}</span>
+          </div>
+          <div class="tag" v-if="post.tags?.length">
+            <span v-for="t in post.tags" :key="t">{{ t }}</span>
           </div>
         </div>
 
-        <div class="article-body">
-        <!-- 建議不用自閉合，寫成成對標籤更直觀 -->
-        <div class="img" :style="post.cover ? { backgroundImage: `url(${post.cover})` } : {}"></div>
+        <div class="contents">
+          <!-- blocks -> nodes 渲染 -->
+          <template v-if="nodes.length">
+            <template v-for="(n, i) in nodes" :key="i">
+              <p v-if="n.type === 'p'">{{ n.text }}</p>
 
-        <div class="content">
-            <div class="author">
-            <div class="name">
-                <span>&ensp;Author / </span>
-                <span>{{ post.author || 'Aida Wu' }}</span>
-            </div>
-            <div class="tag" v-if="post.tags?.length">
-                <span v-for="t in post.tags" :key="t">{{ t }}</span>
-            </div>
-            </div>
+              <h1 v-else-if="n.type === 'h1'">{{ n.text }}</h1>
+              <h2 v-else-if="n.type === 'h2'">{{ n.text }}</h2>
+              <h3 v-else-if="n.type === 'h3'">{{ n.text }}</h3>
 
-            <div class="contents">
-            <!-- blocks -> nodes 渲染 -->
-            <template v-if="nodes.length">
-                <template v-for="(n, i) in nodes" :key="i">
-                    <p v-if="n.type === 'p'">{{ n.text }}</p>
+              <blockquote v-else-if="n.type === 'quote'">{{ n.text }}</blockquote>
 
-                    <h1 v-else-if="n.type === 'h1'">{{ n.text }}</h1>
-                    <h2 v-else-if="n.type === 'h2'">{{ n.text }}</h2>
-                    <h3 v-else-if="n.type === 'h3'">{{ n.text }}</h3>
+              <ul v-else-if="n.type === 'ul'">
+                <li v-for="(li, j) in n.children" :key="j">{{ li.text }}</li>
+              </ul>
 
-                    <blockquote v-else-if="n.type === 'quote'">{{ n.text }}</blockquote>
+              <ol v-else-if="n.type === 'ol'">
+                <li v-for="(li, j) in n.children" :key="j">{{ li.text }}</li>
+              </ol>
 
-                    <ul v-else-if="n.type === 'ul'">
-                        <li v-for="(li, j) in n.children" :key="j">{{ li.text }}</li>
-                    </ul>
+              <hr v-else-if="n.type === 'divider'" />
 
-                    <hr v-else-if="n.type === 'divider'" />
-
-                    <figure v-else-if="n.type === 'img'" class="img-wrap">
-                        <img :src="n.src" :alt="n.caption || ''" />
-                        <figcaption v-if="n.caption">{{ n.caption }}</figcaption>
-                    </figure>
-                </template>
+              <div v-else-if="n.type === 'img'" class="img-wrap">
+                <img :src="n.src" :alt="n.caption || ''" />
+                <figcaption v-if="n.caption">{{ n.caption }}</figcaption>
+              </div>
+              <a
+                v-else-if="n.type === 'bookmark'"
+                :href="n.url"
+                target="_blank"
+                class="bookmark"
+              >
+                <!-- <span class="title">
+                  {{ n.caption || n.url }}
+                </span> -->
+                <span class="url">{{ n.url }}</span>
+              </a>
             </template>
+          </template>
 
-            <!-- 沒 nodes：用描述切段 -->
-            <div v-else>
-                <p v-for="(p, i) in paragraphs" :key="i" class="paragraph">{{ p }}</p>
-            </div>
-            </div>
+          <!-- 沒 nodes：用描述切段 -->
+          <div v-else>
+            <p v-for="(p, i) in paragraphs" :key="i" class="paragraph">{{ p }}</p>
+          </div>
         </div>
-        </div>
+      </div>
     </div>
+  </div>
 
-    <div v-else class="container"><p>Loading…</p></div>
+  <div v-else class="container"><p>Loading…</p></div>
 </template>
 
 <style src="@/assets/css/pages/resources-detail.scss" lang="scss"></style>
 <script setup>
-import { computed, watchEffect } from 'vue'
+import { computed, watchEffect } from "vue";
 
-const route = useRoute()
-const id = computed(() => String(route.params.id))
+const route = useRoute();
+const id = computed(() => String(route.params.id));
 
-const { data, pending, error } = await useFetch(
-  () => `/api/resources/${id.value}`,
-  { key: () => `resource:${id.value}`, default: () => ({ post: null, blocks: [], nodes: [] }) }
-)
+/* --------------------------------------------------
+ * API
+ * -------------------------------------------------- */
+const { data, pending, error } = await useFetch(() => `/api/resources/${id.value}`, {
+  key: () => `resource:${id.value}`,
+  default: () => ({
+    post: null,
+    blocks: [],
+    nodes: [],
+  }),
+});
 
-/* Notion rich_text[] -> 文字 */
-const rtText = (rt) => (rt ?? []).map(t => t?.plain_text ?? '').join('')
+/* --------------------------------------------------
+ * Utils
+ * -------------------------------------------------- */
 
-/* blocks -> nodes（同時支援你的「簡化格式」與原生 Notion block） */
-function toNodes(input) {
-  const out = []
-  let ulBuf = null
-  const flushUl = () => {
-    if (ulBuf && ulBuf.length) out.push({ type: 'ul', children: ulBuf })
-    ulBuf = null
-  }
+/* Notion rich_text[] → 純文字 */
+const rtText = (richText = []) => richText.map((t) => t?.plain_text ?? "").join("");
 
-  for (const b of (input ?? [])) {
-    // 先處理你後端回傳的「簡化格式」：{ id, type, ... }
-    if (b && typeof b === 'object' && 'type' in b && !('paragraph' in b)) {
-      switch (b.type) {
-        case 'p':
-          flushUl()
-          if (b.text) out.push({ type: 'p', text: b.text })
-          break
-        case 'quote':
-          flushUl()
-          if (b.text) out.push({ type: 'quote', text: b.text })
-          break
-        case 'divider':
-          flushUl()
-          out.push({ type: 'divider' })
-          break
-        case 'img':
-          flushUl()
-          if (b.src) out.push({ type: 'img', src: b.src, caption: b.caption })
-          break
-        case 'li':
-          if (b.text) {
-            if (!ulBuf) ulBuf = []
-            ulBuf.push({ type: 'li', text: b.text })
-          }
-          break
-        default:
-          flushUl()
-      }
-      continue
+/* --------------------------------------------------
+ * blocks → nodes
+ *（前端唯一轉換入口）
+ * -------------------------------------------------- */
+function toNodes(blocks = []) {
+  const nodes = [];
+
+  let ulBuffer = null;
+  let olBuffer = null;
+
+  const flushLists = () => {
+    if (ulBuffer?.length) {
+      nodes.push({ type: "ul", children: ulBuffer });
     }
+    if (olBuffer?.length) {
+      nodes.push({ type: "ol", children: olBuffer });
+    }
+    ulBuffer = null;
+    olBuffer = null;
+  };
 
-    // 原生 Notion block
-    const t = b?.type
-    switch (t) {
-      case 'paragraph': {
-        flushUl()
-        const text = rtText(b.paragraph?.rich_text)
-        if (text) out.push({ type: 'p', text })
-        break
+  for (const block of blocks) {
+    /* ---------- 原生 Notion block ---------- */
+    switch (block?.type) {
+      case "paragraph": {
+        flushLists();
+        const text = rtText(block.paragraph?.rich_text);
+        if (text) nodes.push({ type: "p", text });
+        break;
       }
-      case 'heading_1':
-      case 'heading_2':
-      case 'heading_3': {
-        flushUl()
-        const text = rtText(b[t]?.rich_text)
-        if (text) out.push({ type: t === 'heading_1' ? 'h1' : t === 'heading_2' ? 'h2' : 'h3', text })
-        break
-      }
-      case 'quote': {
-        flushUl()
-        const text = rtText(b.quote?.rich_text)
-        if (text) out.push({ type: 'quote', text })
-        break
-      }
-      case 'bulleted_list_item': {
-        const text = rtText(b.bulleted_list_item?.rich_text)
+
+      case "heading_1":
+      case "heading_2":
+      case "heading_3": {
+        flushLists();
+        const text = rtText(block[block.type]?.rich_text);
         if (text) {
-          if (!ulBuf) ulBuf = []
-          ulBuf.push({ type: 'li', text })
+          nodes.push({
+            type: block.type.replace("heading_", "h"),
+            text,
+          });
         }
-        break
+        break;
       }
-      case 'divider': {
-        flushUl()
-        out.push({ type: 'divider' })
-        break
+
+      case "quote": {
+        flushLists();
+        const text = rtText(block.quote?.rich_text);
+        if (text) nodes.push({ type: "quote", text });
+        break;
       }
-      case 'image': {
-        flushUl()
-        const src = b.image?.file?.url || b.image?.external?.url
-        const caption = rtText(b.image?.caption)
-        if (src) out.push({ type: 'img', src, caption })
-        break
+
+      case "bulleted_list_item": {
+        const text = rtText(block.bulleted_list_item?.rich_text);
+        if (text) {
+          if (!ulBuffer) ulBuffer = [];
+          ulBuffer.push({ text });
+        }
+        break;
       }
-      default: {
-        flushUl()
+
+      case "numbered_list_item": {
+        const text = rtText(block.numbered_list_item?.rich_text);
+        if (text) {
+          if (!olBuffer) olBuffer = [];
+          olBuffer.push({ text });
+        }
+        break;
       }
+
+      case "divider":
+        flushLists();
+        nodes.push({ type: "divider" });
+        break;
+
+      case "image": {
+        flushLists();
+        const src = block.image?.file?.url || block.image?.external?.url;
+        const caption = rtText(block.image?.caption);
+        if (src) nodes.push({ type: "img", src, caption });
+        break;
+      }
+
+      case "bookmark": {
+        flushLists();
+
+        const url = block.bookmark?.url;
+        const caption = rtText(block.bookmark?.caption);
+
+        if (url) {
+          nodes.push({
+            type: "bookmark",
+            url,
+            caption,
+          });
+        }
+        break;
+      }
+
+      default:
+        flushLists();
     }
   }
-  flushUl()
-  return out
+
+  flushLists();
+  return nodes;
 }
 
-/* 直接用 API 回傳的 post */
-const post = computed(() => data.value?.post ?? null)
+/* --------------------------------------------------
+ * Computed data
+ * -------------------------------------------------- */
 
-/* 有 nodes 就用 nodes；否則把 blocks 轉成 nodes */
+const post = computed(() => data.value?.post ?? null);
+
+/**
+ * ⭐ 關鍵修改在這裡 ⭐
+ *
+ * 改成「永遠優先使用 blocks」
+ * 確保：
+ * - 使用的是最新、正確的 Notion 結構
+ * - 不會吃到 server 舊版 nodes
+ */
 const nodes = computed(() => {
-  const given = data.value?.nodes
-  if (given?.length) return given
-  const blocks = data.value?.blocks ?? []
-  return toNodes(blocks)
-})
+  const blocks = data.value?.blocks;
+  if (Array.isArray(blocks) && blocks.length) {
+    return toNodes(blocks);
+  }
+  return [];
+});
 
-/* 沒有 nodes 時，用 description 當後備段落 */
+/* 沒有 nodes 時的 fallback */
 const paragraphs = computed(() => {
-  if (nodes.value.length) return []
-  const desc = post.value?.description ?? ''
-  return desc.split(/\n{2,}/).map(s => s.trim()).filter(Boolean)
-})
+  if (nodes.value.length) return [];
+  const desc = post.value?.description ?? "";
+  return desc
+    .split(/\n{2,}/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+});
 
-/* 除錯觀察：瀏覽器 DevTools > Console（server 端 log 會在終端機） */
+/* --------------------------------------------------
+ * Debug
+ * -------------------------------------------------- */
 watchEffect(() => {
-  console.log('[detail] API post →', data.value?.post)
-  console.log('[detail] API blocks →', data.value?.blocks)
-  console.log('[detail] nodes →', nodes.value)
-})
+  console.group("[detail] content layers");
+  console.log("raw blocks →", data.value?.blocks);
+  console.log("nodes (frontend normalized) →", nodes.value);
+  console.log("post →", post.value);
+  console.groupEnd();
+});
 </script>
-
-<style lang="scss" scoped>
-.container {
-    padding: 10rem 14rem;
-    background-color: $color-bg;
-    .article-head {
-        display: flex; justify-content: space-between; align-items: flex-start;
-        .title {
-            h1 { 
-                font-size: $font-size-giant; 
-                font-weight: 600; 
-                margin-bottom: 1rem; }
-            h2 { 
-                font-size: $font-size-xl; 
-                font-weight: 500; 
-                color: $color-text-light; 
-            }
-        }
-    }
-
-    .article-body {
-        .img {
-            margin: 5rem 0; 
-            width: 100%; 
-            max-height: 540px; 
-            aspect-ratio: 1 / 1;
-            border-radius: 60px; 
-            background-color: $color-text-light; 
-            background-size: cover; 
-            background-position: center;
-        }
-        .content {
-            display: flex; 
-            justify-content: space-between; 
-            align-items: flex-start; 
-            gap: 5rem;
-        .author {
-            flex: 1;
-            .name { 
-                font-size: $font-size-lg; 
-                font-weight: 500; 
-            }
-            .tag {
-                margin-top: 2rem; 
-                font-size: $font-size-sm; 
-                color: $color-text-light;
-                span { 
-                    padding: .5rem 1rem; 
-                    border: .5px solid $color-border; 
-                    border-radius: 50px; 
-                    margin-right: .5rem; 
-                }
-            }
-        }
-
-            .contents {
-                flex: 4;
-
-                .subtitle {
-                    font-size: $font-size-xxl;
-                    font-weight: 500;
-                    margin-bottom: 1rem;
-                }
-
-                .paragraph {
-                    font-size: $font-size-base;
-                    font-weight: 300;
-                    color: $color-text-light;
-                    text-align: justify;
-                    line-height: 1.5rem;
-                    margin-bottom: 2rem;
-                }
-
-                .img {
-                    margin: 5rem 0;
-                    width: 100%;
-                    max-height: 540px;
-                    aspect-ratio: 1 / 1;
-                    border-radius: 60px;
-                    background-color: $color-text-light;
-                }
-            }
-        }
-    }
-}
-</style>
