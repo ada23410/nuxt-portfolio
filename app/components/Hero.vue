@@ -14,7 +14,15 @@
         </span>
         Turning
       </span>
-      <span class="word insights">insights</span><br />
+      <span class="word insights mask-area">
+        <!-- 原本的字（底層） -->
+        <span class="text-base">insights</span>
+
+        <!-- 放大鏡層 -->
+        <span class="lens">
+          <span class="text-zoom"> insights <span class="symbol">◉</span> </span>
+        </span>
+      </span>
     </div>
     <div class="line">
       <span class="word into">
@@ -39,17 +47,46 @@
   </h1>
   <h2 class="subtitle">從理解人開始，邁向解決問題的設計</h2>
 </template>
-
 <script setup>
-import { onMounted } from "vue";
+import { computed, onMounted, onBeforeUnmount, nextTick } from "vue";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
-onMounted(() => {
-  // 確保只在 client 跑
+/* ---------- data fetch（你原本的） ---------- */
+
+const { data: resourcesData } = await useFetch("/api/resources", {
+  query: { limit: 2 },
+  default: () => ({ items: [] }),
+});
+const items = computed(() => resourcesData.value?.items ?? []);
+
+const { data: projectsData } = await useFetch("/api/projects", {
+  query: { limit: 3 },
+  default: () => ({ items: [] }),
+});
+const projects = computed(() => projectsData.value?.items ?? []);
+
+/* ---------- helpers ---------- */
+
+function shapeClass(index) {
+  if (index === 0) return "square";
+  if (index === 1) return "circle";
+  if (index === 2) return "triangle";
+  return "";
+}
+
+/* ---------- onMounted ---------- */
+
+onMounted(async () => {
   if (process.server) return;
+
+  await nextTick();
+
+  /* ===============================
+     Hero GSAP timeline（新增）
+     =============================== */
 
   const tl = gsap.timeline({ delay: 0.25 });
 
@@ -109,8 +146,32 @@ onMounted(() => {
     animation: tl,
     once: true,
   });
+  /* ===============================
+     你原本的 scroll reveal
+     =============================== */
+
+  const elements = document.querySelectorAll(
+    ".project-shape, .look-more, .resource-shape, .services-card, .inorganic"
+  );
+
+  const onScroll = () => {
+    const triggerY = window.innerHeight * 0.7;
+    elements.forEach((el) => {
+      if (el.getBoundingClientRect().top < triggerY) {
+        el.classList.add("visible");
+      }
+    });
+  };
+
+  onScroll();
+  window.addEventListener("scroll", onScroll, { passive: true });
+
+  onBeforeUnmount(() => {
+    window.removeEventListener("scroll", onScroll);
+  });
 });
 </script>
+
 <style lang="scss" scoped>
 /* Hero 容器：只負責排版，不負責字級 */
 .hero {
@@ -145,6 +206,12 @@ onMounted(() => {
   //   transform: translateY(-4px);
   //   transition: transform 0.3s;
   // }
+}
+
+.hover-focus {
+  display: inline-block; // 🔥 必須
+  transform-origin: center;
+  will-change: transform;
 }
 
 /* =========================
@@ -228,6 +295,41 @@ onMounted(() => {
   transform: skewX(0deg);
 }
 
+.mask-area {
+  position: relative;
+}
+
+.text-base {
+  position: relative;
+  z-index: 1;
+}
+
+.lens {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  pointer-events: none;
+
+  opacity: 0;
+  z-index: 2;
+}
+
+.text-zoom {
+  font-size: 1.3em; // 🔥 放大倍率
+  font-weight: inherit;
+  white-space: nowrap;
+
+  transform: translate(-20%, -20%);
+}
+
+.symbol {
+  color: #5bc95b;
+  margin-left: 0.1em;
+}
 /* =========================
  * Into (o-stack)
  * ========================= */
