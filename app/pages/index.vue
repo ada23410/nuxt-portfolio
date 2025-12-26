@@ -2,12 +2,9 @@
   <div class="home-main">
     <div class="Hero-section">
       <div>
-        <h1 id="typed-line1"></h1>
-        <h2 id="typed-line2"></h2>
-        <h3 id="typed-line3"></h3>
-      </div>
-      <div>
-        <p id="typed-line4"></p>
+        <ClientOnly>
+          <Hero />
+        </ClientOnly>
       </div>
       <div class="scroll">
         <a class="scroll-link" href="#next">
@@ -139,30 +136,8 @@
 <style src="@/assets/css/pages/home.scss" lang="scss"></style>
 <script setup>
 import { computed, ref, onMounted, onBeforeUnmount, nextTick } from "vue";
-import Typed from "typed.js";
 import Card from "@/components/Card.vue";
-
-/* ---------- Constants ---------- */
-const TYPE_SPEED = 50;
-const START_DELAY_LINE1 = 500;
-const START_DELAY_BETWEEN_LINES = 300;
-const START_DELAY_LINE3 = 450;
-const START_DELAY_LINE4 = 450;
-
-/* ---------- Utilities ---------- */
-// 以 Promise 包住 Typed，讓流程用 await 寫起來更直覺
-function typeLine(el, text, { startDelay = 0 } = {}) {
-  return new Promise((resolve) => {
-    const instance = new Typed(el, {
-      strings: [text],
-      typeSpeed: TYPE_SPEED,
-      backSpeed: 0,
-      startDelay,
-      showCursor: false,
-      onComplete: () => resolve(instance),
-    });
-  });
-}
+import Hero from "~/components/Hero.vue";
 
 /* ---------- Data Fetching ---------- */
 // resources
@@ -187,65 +162,7 @@ function shapeClass(index) {
   return "";
 }
 
-/* ---------- Typed.js flow ---------- */
-const typedInstances = [];
-
-async function initTyping() {
-  // Line 1
-  const t1 = await typeLine("#typed-line1", "Turning insights", {
-    startDelay: START_DELAY_LINE1,
-  });
-  document.querySelector("#typed-line1").classList.add("underline-animate");
-  document.querySelector("#typed-line1").insertAdjacentHTML(
-    "beforeend",
-    `<img 
-        src="/hero_animate.gif" 
-        class="underline-gif"
-        alt="underline animation"
-        >`
-  );
-  typedInstances.push(t1);
-
-  // Line 2
-  const t2 = await typeLine("#typed-line2", "into stories", {
-    startDelay: START_DELAY_BETWEEN_LINES,
-  });
-  const line2 = document.querySelector("#typed-line2");
-  line2.innerHTML = line2.innerHTML.replace(
-    "stories",
-    '<span class="highlight-green" style="color: #66cc66;">stories</span>'
-  );
-  line2.classList.add("underline-animate");
-  typedInstances.push(t2);
-
-  // 等下劃線動畫結束再打第三行
-  await new Promise((res) => line2.addEventListener("animationend", res, { once: true }));
-
-  // Line 3
-  const t3 = await typeLine("#typed-line3", "that inspire change.", {
-    startDelay: START_DELAY_LINE3,
-  });
-  const line3 = document.querySelector("#typed-line3");
-  line3.classList.add("underline-animate");
-  line3.insertAdjacentHTML(
-    "beforeend",
-    `<img 
-        src="/hero_animate_2.gif" 
-        class="underline-gif-2" 
-        alt="underline animation"
-        >`
-  );
-  typedInstances.push(t3);
-
-  // Line 4（副標）
-  const t4 = await typeLine("#typed-line4", "從理解人開始，邁向解決問題的設計", {
-    startDelay: START_DELAY_LINE4,
-  });
-  typedInstances.push(t4);
-}
-
 onMounted(async () => {
-  initTyping();
   await nextTick();
   const elements = document.querySelectorAll(
     ".project-shape, .look-more, .resource-shape, .services-card, .inorganic"
