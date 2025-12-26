@@ -56,6 +56,13 @@
                 <img :src="n.src" :alt="n.caption || ''" />
                 <figcaption v-if="n.caption">{{ n.caption }}</figcaption>
               </div>
+
+              <pre v-else-if="n.type === 'code'" class="code-block">
+                <code :data-lang="n.language">
+              {{ n.text }}
+                </code>
+              </pre>
+
               <a
                 v-else-if="n.type === 'bookmark'"
                 :href="n.url"
@@ -188,6 +195,22 @@ function toNodes(blocks = []) {
         const src = block.image?.file?.url || block.image?.external?.url;
         const caption = rtText(block.image?.caption);
         if (src) nodes.push({ type: "img", src, caption });
+        break;
+      }
+
+      case "code": {
+        flushLists();
+
+        const text = rtText(block.code?.rich_text);
+        const language = block.code?.language || "";
+
+        if (text) {
+          nodes.push({
+            type: "code",
+            text,
+            language,
+          });
+        }
         break;
       }
 

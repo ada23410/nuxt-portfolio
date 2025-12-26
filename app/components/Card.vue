@@ -86,12 +86,14 @@ const itemTo = (it) => `${props.basePath}/${encodeURIComponent(String(it.id))}`;
       margin-top: 1.5rem;
       .title {
         .text {
-          font-size: $font-size-xxl;
+          font-size: $font-size-xl;
           font-weight: 500;
-          margin-bottom: 1rem;
+          line-height: 2rem;
+          color: $color-text;
+          margin-bottom: 0.2rem;
         }
         .time {
-          font-size: $font-size-lg;
+          font-size: $font-size-base;
           color: $color-text-light;
         }
       }
