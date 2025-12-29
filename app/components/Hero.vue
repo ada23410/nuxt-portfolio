@@ -183,7 +183,7 @@ onMounted(async () => {
 }
 
 .subtitle {
-  font-size: $font-size-xl;
+  font-size: $font-size-lg;
   font-weight: 400;
   margin-top: 2rem;
 }

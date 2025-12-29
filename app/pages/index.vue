@@ -21,10 +21,41 @@
     </section>
 
     <!-- ======================
+     * Problem framing
+     * ====================== -->
+    <div class="problem-framing">
+      <div class="problem-content">
+        <p class="slogan-zh fragment-text">
+          洞察往往支離破碎，解決方案難以回應真實需求。
+        </p>
+        <p class="slogan-en fragment-text">
+          Where insights often stay fragmented,<br />
+          and solutions fail to connect real human needs.
+        </p>
+      </div>
+    </div>
+    <!-- ======================
+     * method
+     * ====================== -->
+    <section class="method-section">
+      <div class="method-shapes">
+        <div class="project-geometry square"></div>
+        <div class="project-geometry circle"></div>
+        <div class="project-geometry triangle"></div>
+      </div>
+
+      <p class="method-slogan zh">我將複雜問題轉化為清晰的結構、流程與決策。</p>
+      <p class="method-slogan en">
+        I translate complexity into clear structures, flows, and decisions.
+      </p>
+    </section>
+    <!-- ======================
      * Projects
      * ====================== -->
     <section id="projects" class="kv-section">
-      <h2 class="section-title project-title">Where insights take shape</h2>
+      <h2 class="section-title project-title">
+        Here’s how those ideas turn into real-world work.
+      </h2>
 
       <div class="project-card project-blocks">
         <NuxtLink
@@ -33,7 +64,6 @@
           :to="`/projects/${project.id}`"
           class="project-shape"
         >
-          <!-- ✅ 修正：class 命名與 SCSS 對應 -->
           <div
             class="project-geometry"
             :class="shapeClass(index)"
@@ -41,7 +71,6 @@
           />
         </NuxtLink>
       </div>
-
       <div class="look-more">
         <NuxtLink to="/projects">
           <span class="description">DISCOVER PROJECTS</span>
@@ -54,9 +83,9 @@
      * Resources
      * ====================== -->
     <section class="resources">
-      <h2 class="section-title resources-title">Resources</h2>
-
-      <!-- ✅ 修正：確保 resource-card 是容器，resource-shape 是子元素 -->
+      <h2 class="section-title resources-title">
+        I document, reflect, and share what I learn along the way.
+      </h2>
       <div class="resource-card">
         <!-- Card 組件本身應該要帶有 resource-shape class -->
         <Card class="resource-shape" :items="items" base-path="/resources" />
@@ -74,7 +103,9 @@
      * Services
      * ====================== -->
     <section class="services">
-      <h2 class="services-title">Services</h2>
+      <h2 class="services-title">
+        If you’re facing similar challenges, this is how we can work together.
+      </h2>
 
       <div class="services-card">
         <div class="card" v-for="n in 3" :key="n">
@@ -97,6 +128,10 @@
         <span class="pill" v-for="n in 6" :key="n" />
       </NuxtLink>
 
+      <div class="slogan">
+        I’m Aida — a designer-turned-developer working at the intersection of research,
+        systems, and AI.
+      </div>
       <div class="look-more">
         <NuxtLink to="/about">
           <span class="description">DISCOVER ABOUT ME</span>
@@ -140,13 +175,46 @@ function shapeClass(index) {
   return shapes[index] || "";
 }
 
+function initFragmentText() {
+  document.querySelectorAll(".fragment-text").forEach((el) => {
+    const text = el.innerText.trim();
+    el.innerHTML = text
+      .split("")
+      .map((char) => (char === " " ? "&nbsp;" : `<span class="char">${char}</span>`))
+      .join("");
+  });
+}
+
+function animateFragmentText() {
+  gsap.set(".fragment-text .char", {
+    opacity: 0,
+    y: 12,
+    rotate: -3,
+  });
+
+  gsap.to(".fragment-text .char", {
+    opacity: 1,
+    y: 0,
+    rotate: 0,
+    stagger: {
+      each: 0.015,
+      from: "random",
+    },
+    ease: "power3.out",
+    scrollTrigger: {
+      trigger: ".problem-framing",
+      start: "top 65%",
+    },
+  });
+}
+
 /* ========================================
-   GSAP Scroll Reveal（改進版）
+   GSAP Scroll Reveal
 ======================================== */
 function revealOnScroll(selector, options = {}) {
   // 等待 DOM 完全渲染
   gsap.utils.toArray(selector).forEach((el) => {
-    // ✅ 使用 to 而不是 from，確保元素一開始是隱藏狀態
+    // 使用 to 而不是 from，確保元素一開始是隱藏狀態
     gsap.to(el, {
       scrollTrigger: {
         trigger: el,
@@ -170,13 +238,15 @@ function revealOnScroll(selector, options = {}) {
 onMounted(async () => {
   await nextTick();
 
+  initFragmentText();
+  animateFragmentText();
   /* ==========================
      Project Hover Interaction
      ========================== */
   document.querySelectorAll(".project-shape").forEach((card) => {
     const shape = card.querySelector(".project-geometry");
 
-    // ✅ 確保 shape 存在
+    // 確保 shape 存在
     if (!shape) return;
 
     card.addEventListener("mouseenter", () => {

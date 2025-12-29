@@ -34,7 +34,7 @@
       --arrow-color-hover: #66cc66;
 
       text-align: center;
-      margin-top: 8rem;
+      margin-top: 5rem;
 
       .scroll-link {
         display: inline-flex;
@@ -117,6 +117,86 @@
     }
   }
 
+  /* ========== Problem Framing ========== */
+  .problem-framing {
+    margin-top: 5rem;
+    margin-inline: -18rem;
+    min-height: 600px;
+    background-color: $color-bg-dark;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .problem-content {
+    max-width: 960px;
+    text-align: center;
+    p {
+      font-size: $font-size-lg;
+      color: $color-text-white;
+      letter-spacing: 0.12em;
+      line-height: 2rem;
+    }
+    .char {
+      display: inline-block;
+      opacity: 0;
+      transform: translateY(12px) rotate(-3deg);
+    }
+  }
+  /* ========== method-section ========== */
+  .method-section {
+    margin-top: 5rem;
+    margin-inline: -18rem;
+    min-height: 600px;
+    text-align: center;
+    background-color: $color-bg-dark;
+
+    .method-shapes {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-bottom: 3rem;
+
+      .project-geometry {
+        width: 100%;
+        max-width: 387px;
+        aspect-ratio: 1 / 1;
+        background-color: $color-text-light;
+        background-position: center;
+        background-size: cover;
+        background-repeat: no-repeat;
+
+        &.square {
+          border-radius: 60px;
+          z-index: 2;
+        }
+
+        &.circle {
+          border-radius: 50%;
+          z-index: 1;
+        }
+
+        &.triangle {
+          -webkit-mask-image: url("/rounded-triangle.svg");
+          -webkit-mask-repeat: no-repeat;
+          -webkit-mask-size: contain;
+          -webkit-mask-position: center;
+          mask-image: url("/rounded-triangle.svg");
+          mask-repeat: no-repeat;
+          mask-size: contain;
+          mask-position: center;
+        }
+      }
+    }
+
+    .method-slogan {
+        font-size: $font-size-lg;
+        color: $color-text-white;
+        letter-spacing: 0.12em;
+        line-height: 2rem;
+    }
+  }
+
   /* ========== Shared Sections ========== */
   .kv-section,
   .resources,
@@ -154,14 +234,11 @@
       padding: 5rem 0;
 
       .project-shape {
+        position: relative;
         width: 378px;
-        aspect-ratio: 1 / 1;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-
-        /* ✅ 修正：選擇器應該針對 .project-geometry 及其 class */
+        min-height: 600px; // 控制整個構圖高度
         .project-geometry {
+          position: absolute;
           width: 100%;
           max-width: 387px;
           aspect-ratio: 1 / 1;
@@ -169,16 +246,26 @@
           background-position: center;
           background-size: cover;
           background-repeat: no-repeat;
-
+    
           &.square {
+            top: 25%;
             border-radius: 60px;
+            z-index: 2;
           }
 
           &.circle {
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
             border-radius: 50%;
+            z-index: 1;
           }
 
           &.triangle {
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1;
             -webkit-mask-image: url("/rounded-triangle.svg");
             -webkit-mask-repeat: no-repeat;
             -webkit-mask-size: contain;
@@ -193,7 +280,6 @@
     }
 
     /* ========== Resources Card ========== */
-    /* ✅ 新增：確保 resource-shape 初始隱藏 */
     .resource-card {
       padding: 5rem 0;
 
