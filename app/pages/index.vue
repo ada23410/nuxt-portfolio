@@ -1,4 +1,5 @@
 <template>
+  <Loader @done="loaderDone = true" />
   <div class="home-main">
     <!-- ======================
      * Hero
@@ -23,7 +24,7 @@
     <!-- ======================
      * Problem framing
      * ====================== -->
-    <div class="problem-framing">
+    <section class="problem-framing">
       <div class="problem-content">
         <p class="slogan-zh fragment-text">
           洞察往往支離破碎，解決方案難以回應真實需求。
@@ -33,15 +34,21 @@
           and solutions fail to connect real human needs.
         </p>
       </div>
-    </div>
+    </section>
     <!-- ======================
      * method
      * ====================== -->
     <section class="method-section">
       <div class="method-shapes">
-        <div class="project-geometry square"></div>
-        <div class="project-geometry circle"></div>
-        <div class="project-geometry triangle"></div>
+        <div class="project-geometry square">
+          <span>Systems</span>
+        </div>
+        <div class="project-geometry circle">
+          <span>Relationships</span>
+        </div>
+        <div class="project-geometry triangle">
+          <span>Decisions</span>
+        </div>
       </div>
 
       <p class="method-slogan zh">我將複雜問題轉化為清晰的結構、流程與決策。</p>
@@ -128,10 +135,10 @@
         <span class="pill" v-for="n in 6" :key="n" />
       </NuxtLink>
 
-      <div class="slogan">
+      <p class="about-slogan">
         I’m Aida — a designer-turned-developer working at the intersection of research,
         systems, and AI.
-      </div>
+      </p>
       <div class="look-more">
         <NuxtLink to="/about">
           <span class="description">DISCOVER ABOUT ME</span>
@@ -144,13 +151,20 @@
 
 <style src="@/assets/css/pages/home.scss" lang="scss"></style>
 <script setup>
-import { computed, onMounted, nextTick } from "vue";
+import { computed, onMounted, nextTick, ref, watch } from "vue";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
+import Loader from "~/components/Loader.vue";
 import Card from "@/components/Card.vue";
 import Hero from "~/components/Hero.vue";
 
 gsap.registerPlugin(ScrollTrigger);
+
+/* -----------------------
+   State（關鍵）
+----------------------- */
+const loaderDone = ref(false); // Loader 是否結束
+const pageReady = ref(false); // DOM 是否真的 ready
 
 /* ========================================
    Data Fetching
@@ -175,6 +189,7 @@ function shapeClass(index) {
   return shapes[index] || "";
 }
 
+/* ---------- Problem Fragment ---------- */
 function initFragmentText() {
   document.querySelectorAll(".fragment-text").forEach((el) => {
     const text = el.innerText.trim();
@@ -183,23 +198,12 @@ function initFragmentText() {
       .map((char) => (char === " " ? "&nbsp;" : `<span class="char">${char}</span>`))
       .join("");
   });
-}
 
-function animateFragmentText() {
-  gsap.set(".fragment-text .char", {
+  gsap.from(".fragment-text .char", {
     opacity: 0,
     y: 12,
     rotate: -3,
-  });
-
-  gsap.to(".fragment-text .char", {
-    opacity: 1,
-    y: 0,
-    rotate: 0,
-    stagger: {
-      each: 0.015,
-      from: "random",
-    },
+    stagger: { each: 0.015, from: "random" },
     ease: "power3.out",
     scrollTrigger: {
       trigger: ".problem-framing",
@@ -208,45 +212,49 @@ function animateFragmentText() {
   });
 }
 
-/* ========================================
-   GSAP Scroll Reveal
-======================================== */
-function revealOnScroll(selector, options = {}) {
-  // 等待 DOM 完全渲染
-  gsap.utils.toArray(selector).forEach((el) => {
-    // 使用 to 而不是 from，確保元素一開始是隱藏狀態
-    gsap.to(el, {
-      scrollTrigger: {
-        trigger: el,
-        start: "top 85%",
-        end: "top 50%",
-        toggleActions: "play none none reverse",
-        // 取消 once，允許重複動畫
+/* ---------- Hero ---------- */
+function initHeroScrollTimeline() {
+  // 防止重複建立 Hero pin
+  if (ScrollTrigger.getById("hero")) return;
+
+  const heroTl = gsap.timeline({
+    scrollTrigger: {
+      id: "hero",
+      trigger: ".Hero-section",
+      start: "top top",
+      end: () => "+=" + window.innerHeight * 1.2,
+      pin: true,
+      pinSpacing: true,
+      scrub: true,
+      anticipatePin: 1,
+      invalidateOnRefresh: true,
+      onLeave: () => {
+        initAfterHero(); // Hero 結束後才做後面
       },
-      y: 0,
-      opacity: 1,
-      duration: options.duration ?? 0.7,
-      ease: options.ease ?? "power3.out",
-      delay: options.delay ?? 0,
-    });
+    },
   });
+
+  heroTl
+    .from(".hero-line", {
+      opacity: 0,
+      y: 40,
+      ease: "power3.out",
+    })
+    .to(".hero-line", {
+      letterSpacing: "0.12em",
+      ease: "power2.out",
+    })
+    .from(".scroll", {
+      opacity: 0,
+      y: -10,
+      ease: "power2.out",
+    });
 }
 
-/* ========================================
-   Mounted Hook
-======================================== */
-onMounted(async () => {
-  await nextTick();
-
-  initFragmentText();
-  animateFragmentText();
-  /* ==========================
-     Project Hover Interaction
-     ========================== */
+/* ---------- Hover ---------- */
+function initProjectHover() {
   document.querySelectorAll(".project-shape").forEach((card) => {
     const shape = card.querySelector(".project-geometry");
-
-    // 確保 shape 存在
     if (!shape) return;
 
     card.addEventListener("mouseenter", () => {
@@ -269,10 +277,10 @@ onMounted(async () => {
       });
     });
   });
+}
 
-  /* ==========================
-     Project Timeline Animation
-     ========================== */
+/* ---------- Project Section ---------- */
+function initProjectTimeline() {
   const projectTl = gsap.timeline({
     scrollTrigger: {
       trigger: ".kv-section",
@@ -282,42 +290,81 @@ onMounted(async () => {
   });
 
   projectTl
-    .fromTo(
-      ".project-title",
-      { x: -40, opacity: 0 },
-      {
-        x: -230,
-        opacity: 1,
-        duration: 0.6,
-        ease: "power3.out",
-      }
-    )
-    .fromTo(
+    .from(".project-title", {
+      x: -40,
+      opacity: 0,
+      duration: 0.6,
+      ease: "power3.out",
+    })
+    .from(
       ".project-shape",
-      { y: 80, opacity: 0, scale: 0.9 },
       {
-        y: 0,
-        opacity: 1,
-        scale: 1,
+        y: 80,
+        opacity: 0,
+        scale: 0.9,
         duration: 0.6,
         ease: "power3.out",
         stagger: 0.15,
       },
       "+=0.1"
     );
+}
 
-  /* ==========================
-     Universal Reveal Animations
-     ========================== */
-  // ✅ 確保初始隱藏狀態
-  gsap.set([".resource-shape", ".services-card", ".inorganic"], {
-    opacity: 0,
-    y: 40,
+/* ---------- Generic Reveal ---------- */
+function revealOnScroll(targets, triggerEl, options = {}) {
+  gsap.fromTo(
+    targets,
+    { opacity: 0, y: options.fromY ?? 40 },
+    {
+      opacity: 1,
+      y: 0,
+      duration: options.duration ?? 0.8,
+      ease: "power3.out",
+      stagger: options.stagger ?? 0.15,
+      scrollTrigger: {
+        trigger: triggerEl,
+        start: "top 70%",
+      },
+    }
+  );
+}
+
+function initAfterHero() {
+  initFragmentText();
+  animateFragmentText();
+  initProjectHover();
+  initProjectTimeline();
+
+  revealOnScroll(".resource-shape", ".resources");
+  revealOnScroll(".services-card .card", ".services");
+  revealOnScroll(".inorganic .pill", ".about");
+
+  ScrollTrigger.refresh();
+}
+
+/* ========================================
+   DOM Ready
+======================================== */
+onMounted(async () => {
+  await nextTick();
+  requestAnimationFrame(() => {
+    pageReady.value = true;
   });
-
-  revealOnScroll(".resource-shape", { y: 30, duration: 0.7 });
-  revealOnScroll(".services-card", { y: 40, duration: 0.7 });
-  revealOnScroll(".inorganic", { y: 20, duration: 0.7 });
-  revealOnScroll(".look-more", { y: 20, duration: 0.6 });
 });
+
+/* ========================================
+   Sequence Control（最重要）
+======================================== */
+watch(
+  [loaderDone, pageReady],
+  async ([loader, page]) => {
+    if (!loader || !page) return;
+
+    await nextTick();
+
+    // Hero：接管 scroll
+    initHeroScrollTimeline();
+  },
+  { once: true }
+);
 </script>
