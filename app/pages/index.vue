@@ -165,7 +165,7 @@ gsap.registerPlugin(ScrollTrigger);
 ----------------------- */
 const loaderDone = ref(false); // Loader 是否結束
 const pageReady = ref(false); // DOM 是否真的 ready
-
+const heroReady = ref(false);
 /* ========================================
    Data Fetching
 ======================================== */
@@ -192,26 +192,36 @@ function shapeClass(index) {
 /* ---------- Problem Fragment ---------- */
 function initFragmentText() {
   document.querySelectorAll(".fragment-text").forEach((el) => {
+    if (el.dataset.fragmented) return;
+
     const text = el.innerText.trim();
     el.innerHTML = text
       .split("")
       .map((char) => (char === " " ? "&nbsp;" : `<span class="char">${char}</span>`))
       .join("");
-  });
 
-  gsap.from(".fragment-text .char", {
-    opacity: 0,
-    y: 12,
-    rotate: -3,
-    stagger: { each: 0.015, from: "random" },
-    ease: "power3.out",
-    scrollTrigger: {
-      trigger: ".problem-framing",
-      start: "top 65%",
-    },
+    el.dataset.fragmented = "true";
   });
 }
 
+function animateFragmentTextOnScroll() {
+  gsap.fromTo(
+    ".fragment-text .char",
+    { opacity: 0, y: 16, rotate: -4 },
+    {
+      opacity: 1,
+      y: 0,
+      rotate: 0,
+      stagger: { each: 0.018, from: "random" },
+      ease: "power3.out",
+      scrollTrigger: {
+        trigger: ".problem-framing",
+        start: "top 65%",
+        once: true, // 👈 非常重要
+      },
+    }
+  );
+}
 /* ---------- Hero ---------- */
 function initHeroScrollTimeline() {
   // 防止重複建立 Hero pin
@@ -331,7 +341,7 @@ function revealOnScroll(targets, triggerEl, options = {}) {
 
 function initAfterHero() {
   initFragmentText();
-  animateFragmentText();
+  animateFragmentTextOnScroll();
   initProjectHover();
   initProjectTimeline();
 

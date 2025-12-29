@@ -83,6 +83,9 @@ onMounted(async () => {
   if (process.server) return;
 
   await nextTick();
+  requestAnimationFrame(() => {
+    emit("ready"); // 告訴父層：hero DOM OK
+  });
 
   /* ===============================
      Hero GSAP timeline（新增）
@@ -147,7 +150,7 @@ onMounted(async () => {
     once: true,
   });
   /* ===============================
-     你原本的 scroll reveal
+     scroll reveal
      =============================== */
 
   const elements = document.querySelectorAll(
